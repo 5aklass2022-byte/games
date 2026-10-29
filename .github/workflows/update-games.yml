@@ -20,60 +20,116 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate game catalog
+      - name: Generate catalog
         run: |
           python3 - <<'PY'
           from pathlib import Path
           from html import escape
           from urllib.parse import quote
 
-          files = sorted(
-              (p for p in Path(".").rglob("*.html")
-               if p.name.lower() != "index.html"
-               and ".git" not in p.parts),
-              key=lambda p: str(p).lower()
-          )
+          grades = [
+              ("5th-grade", "5th Grade"),
+              ("6th-grade", "6th Grade"),
+              ("7th-grade", "7th Grade"),
+              ("8th-grade", "8th Grade"),
+              ("9th-grade", "9th Grade"),
+              ("12th-grade", "12th Grade")
+          ]
 
-          cards = []
-          for p in files:
-              title = p.stem.replace("_", " ")
-              url = "/".join(quote(part) for part in p.parts)
-              cards.append(
-                  f'<a class="game" href="{url}">'
-                  f'🎮 {escape(title)}</a>'
+          css = """
+          body {
+            font-family: Arial, sans-serif;
+            background: #f1f5ff;
+            margin: 0;
+            padding: 24px;
+            color: #23345d;
+          }
+          main {max-width: 900px; margin: auto}
+          h1 {text-align: center}
+          .subtitle {text-align: center}
+          details {
+            background: white;
+            border-radius: 16px;
+            margin: 16px 0;
+            padding: 18px;
+            box-shadow: 0 3px 12px #0001;
+          }
+          summary {
+            cursor: pointer;
+            font-size: 23px;
+            font-weight: bold;
+          }
+          .game {
+            display: block;
+            padding: 14px;
+            margin-top: 12px;
+            background: #edf3ff;
+            border-radius: 10px;
+            color: #2346a0;
+            text-decoration: none;
+          }
+          .game:hover {background: #dbe7ff}
+          """
+
+          sections = []
+
+          for folder, label in grades:
+              directory = Path(folder)
+              files = sorted(
+                  (p for p in directory.rglob("*.html")
+                   if p.name.lower() != "index.html"),
+                  key=lambda p: str(p).lower()
+              ) if directory.exists() else []
+
+              links = []
+              for file in files:
+                  title = escape(
+                      file.stem.replace("_", " ")
+                  )
+                  url = "/".join(
+                      quote(part) for part in file.parts
+                  )
+                  links.append(
+                      f'<a class="game" href="{url}">'
+                      f'🎮 {title}</a>'
+                  )
+
+              content = "\n".join(links)
+              if not content:
+                  content = "<p>No games yet.</p>"
+
+              sections.append(
+                  f"<details><summary>📚 {label}"
+                  f" ({len(files)} games)</summary>"
+                  f"{content}</details>"
               )
 
-          content = """<!DOCTYPE html>
+          page = f"""<!DOCTYPE html>
           <html lang="en">
           <head>
           <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="viewport"
+                content="width=device-width, initial-scale=1">
           <title>My English Games</title>
-          <style>
-          body {font-family:Arial,sans-serif;background:#f0f5ff;
-          padding:30px;max-width:850px;margin:auto}
-          h1{text-align:center;color:#243b73}
-          p{text-align:center}
-          .games{display:grid;gap:14px;margin-top:30px}
-          .game{background:white;padding:20px;border-radius:14px;
-          text-decoration:none;color:#243b73;font-size:18px;
-          box-shadow:0 3px 10px #0001}
-          .game:hover{background:#dfeaff}
-          </style>
+          <style>{css}</style>
           </head>
           <body>
+          <main>
           <h1>🎮 My English Games</h1>
-          <p>Choose a lesson and start playing!</p>
-          <div class="games">
-          """ + "\n".join(cards) + """
-          </div>
+          <p class="subtitle">
+          Choose your grade and start playing!
+          </p>
+          {''.join(sections)}
+          </main>
           </body>
           </html>"""
 
-          Path("index.html").write_text(content, encoding="utf-8")
+          Path("index.html").write_text(
+              page, encoding="utf-8"
+          )
           PY
 
-      - name: Save updated catalog
+      - name: Save catalog
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
