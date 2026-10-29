@@ -1,0 +1,777 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>A United Family Quest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. A home path of eight stages; each stage opens as a screen with learn blocks first, then scored practice cards. Colour tabs echo the textbook (green, blue, pink). */
+:root{
+  --bg:#f1f7f6; --surface:#ffffff; --ink:#12303a; --muted:#4a666e; --line:#cfe0de;
+  --accent:#0e7c86; --accent-ink:#ffffff; --accent-soft:#d8eef0;
+  --green:#cfeedd; --blue:#d3e9f7; --pink:#fbd9d9;
+  --sun:#e9a23b; --good:#1d8a50; --good-soft:#d9f2e3; --bad:#c0392f; --bad-soft:#fbe0dd;
+  --display:'Comfortaa','Nunito',system-ui,sans-serif; --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1b20; --surface:#16282f; --ink:#e5f0ef; --muted:#9fb8bc; --line:#2a444c;
+    --accent:#52c4cf; --accent-ink:#06282d; --accent-soft:#17383e;
+    --green:#1c3d30; --blue:#1b3a4d; --pink:#442a2e;
+    --sun:#f3b55a; --good:#58c68a; --good-soft:#173a2a; --bad:#f08a80; --bad-soft:#442523;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1b20; --surface:#16282f; --ink:#e5f0ef; --muted:#9fb8bc; --line:#2a444c;
+  --accent:#52c4cf; --accent-ink:#06282d; --accent-soft:#17383e;
+  --green:#1c3d30; --blue:#1b3a4d; --pink:#442a2e;
+  --sun:#f3b55a; --good:#58c68a; --good-soft:#173a2a; --bad:#f08a80; --bad-soft:#442523;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);line-height:1.25;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.6rem,5vw,2.3rem);font-weight:700}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.hidden{display:none!important}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.tabs{display:flex;gap:6px;margin:10px 0 14px}
+.tabs i{display:block;height:10px;border-radius:3px}
+.tabs i:nth-child(1){width:64px;background:var(--green)}
+.tabs i:nth-child(2){width:34px;background:var(--blue)}
+.tabs i:nth-child(3){width:34px;background:var(--pink)}
+.kicker{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.xp{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-variant-numeric:tabular-nums}
+.xp svg{width:18px;height:18px}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:6px 0;color:var(--accent);font-weight:800;text-decoration:none}
+
+/* home path */
+.lead{color:var(--muted);max-width:60ch;margin:6px 0 18px}
+.path{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:12px}
+.path::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;width:4px;border-radius:2px;background:var(--line)}
+.path li{display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px;align-items:start;position:relative}
+.node{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;background:var(--surface);border:3px solid var(--line);color:var(--muted);z-index:1}
+.node.done{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stagebtn{text-decoration:none;color:inherit;display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.stagebtn:hover{border-color:var(--accent)}
+.stagebtn .row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.stagebtn h3{margin-bottom:2px}
+.stagebtn .sub{color:var(--muted);font-size:.93rem}
+.stagebtn .ref{display:inline-block;margin-top:6px;font-size:.78rem;font-weight:800;padding:2px 9px;border-radius:6px;color:var(--ink)}
+.t-green{background:var(--green)} .t-blue{background:var(--blue)} .t-pink{background:var(--pink)}
+.stars{display:flex;gap:2px;flex:none}
+.stars svg{width:20px;height:20px}
+.star-on{fill:var(--sun)} .star-off{fill:none;stroke:var(--line);stroke-width:1.6}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;min-width:0}
+.card > h2,.card > h3{margin-bottom:8px}
+.note{color:var(--muted);font-size:.93rem}
+.stagehead{display:flex;gap:12px;align-items:center;margin:4px 0 4px}
+.stagehead .tag{flex:none;width:12px;align-self:stretch;border-radius:6px}
+.status{margin-top:10px;font-weight:800;color:var(--muted)}
+.status.ok{color:var(--good)}
+
+/* buttons */
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font-weight:800}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.small{padding:5px 11px;font-size:.88rem}
+.btn[disabled]{opacity:.5;cursor:default}
+.chip{background:var(--accent-soft);color:var(--ink);border:1px solid transparent;border-radius:999px;padding:6px 13px;font-weight:700}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);color:var(--accent-ink)}
+.row-wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.listen{background:none;border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:.8rem;font-weight:800;color:var(--accent)}
+
+/* vocab cards */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:10px}
+.vc{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg);display:grid;gap:4px;align-content:start;min-width:0}
+.vc .en{font-family:var(--display);font-weight:700;font-size:1.1rem}
+.vc .ipa{color:var(--muted);font-size:.9rem}
+.tr{display:flex;gap:8px;align-items:baseline}
+.lang{flex:none;font-size:.68rem;font-weight:800;letter-spacing:.06em;padding:1px 6px;border-radius:5px;background:var(--blue);color:var(--ink)}
+.lang.ru{background:var(--pink)}
+.vc .eg{font-size:.9rem;color:var(--muted);font-style:italic}
+.vc.cover .tr span:last-child{filter:blur(7px);cursor:pointer;user-select:none}
+.vc.cover.shown .tr span:last-child{filter:none}
+.grouphead{margin-top:18px;display:flex;align-items:center;gap:8px}
+.grouphead i{width:26px;height:8px;border-radius:3px;display:block}
+
+/* reading */
+.dialogue{display:grid;gap:10px;margin-top:8px}
+.line{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:start}
+.who{font-weight:800;font-size:.92rem;padding:2px 8px;border-radius:6px;text-align:center}
+.who.leo{background:var(--blue)} .who.helen{background:var(--pink)} .who.tim{background:var(--green)} .who.alex{background:var(--blue)}
+.say{font-size:1.04rem}
+.w{border-bottom:2px dotted var(--accent);cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;padding:0;font:inherit;color:inherit}
+.w.new{background:var(--accent-soft);border-bottom-style:solid;border-radius:3px}
+.gloss{position:sticky;bottom:10px;margin-top:12px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:grid;gap:2px;z-index:3}
+.gloss b{font-family:var(--display)}
+.textpanel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px}
+.panelfig{width:100%;display:block}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.count{font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--line);border-radius:5px;margin:8px 0 12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .3s}
+.intro{color:var(--muted);margin-bottom:8px}
+.prompt{font-size:1.1rem;font-weight:600;margin-bottom:12px;overflow-wrap:anywhere}
+.answers{display:grid;gap:8px}
+.answers.bank{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.opt{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:10px 13px;font-weight:600}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt.good{background:var(--good-soft);border-color:var(--good)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{cursor:default}
+.fill{color:var(--good);border-bottom:3px solid var(--good)}
+.blank{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--muted);text-align:center}
+.typebox{display:flex;gap:8px;flex-wrap:wrap}
+.typebox input,.sentrow input,textarea{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+.typebox input{flex:1 1 180px}
+.typebox input:focus,.sentrow input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.fb{min-height:1.5em;margin-top:12px}
+.fb .ok{color:var(--good);font-weight:800}
+.fb .no{color:var(--bad);font-weight:800}
+.nav{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.result{text-align:center;display:grid;gap:10px;justify-items:center;padding:8px 0}
+.result .stars svg{width:38px;height:38px}
+.big{font-family:var(--display);font-size:1.5rem;font-weight:700}
+
+/* grammar */
+.explain{display:grid;gap:8px}
+.lng{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft)}
+.scroll{overflow-x:auto;max-width:100%}
+.eg-box{background:var(--accent-soft);border-radius:10px;padding:8px 12px;margin:2px 0}
+
+/* match */
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:10px}
+.matchgrid button{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 11px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.matchgrid button.sel{border-color:var(--accent);background:var(--accent-soft)}
+.matchgrid button.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+
+/* spinner + speaking */
+.spin{font-size:1.15rem;font-weight:700;background:var(--bg);border:2px dashed var(--line);border-radius:12px;padding:14px;margin:10px 0;min-height:4.2em}
+
+/* writing */
+.sentrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
+.sentrow label{font-weight:800}
+.sentrow .st{grid-column:2;font-size:.9rem}
+.sentrow input{width:100%}
+textarea{width:100%;min-height:190px;resize:vertical;line-height:1.5}
+.checklist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:4px}
+.checklist li{display:flex;gap:8px;align-items:center}
+.checklist .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none}
+.checklist li.ok .dot{background:var(--good);border-color:var(--good)}
+.checklist li.ok{color:var(--good);font-weight:700}
+
+@media (max-width:520px){
+  .line{grid-template-columns:minmax(0,1fr)}
+  .line .listen{justify-self:start}
+  .who{justify-self:start}
+  .sentrow{grid-template-columns:minmax(0,1fr)}
+  .sentrow .st{grid-column:1}
+  .matchgrid{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.bar i{transition:none}}
+</style>
+<div class="wrap" id="app"></div>
+<script>
+(function(){
+'use strict';
+
+/* ---------- DATA ---------- */
+var VOCAB=[
+ {g:'New words and phrases',tint:'green',items:[
+  {en:'to swap',ipa:'/swɒp/',ro:'a schimba între ei',ru:'меняться, обмениваться',ex:'We swap every week.',core:1},
+  {en:'helpful',ipa:'/ˈhelpfl/',ro:'săritor, de ajutor',ru:'полезный, готовый помочь',ex:'She is so kind and helpful.',core:1},
+  {en:'hopeless',ipa:'/ˈhəʊpləs/',ro:'fără speranță; nepriceput',ru:'безнадёжный; никудышный',ex:'My sister is hopeless at maths.',core:1},
+  {en:'lucky',ipa:'/ˈlʌki/',ro:'norocos',ru:'счастливый, везучий',ex:'You are lucky to have such a big family.',core:1},
+  {en:'own',ipa:'/əʊn/',ro:'propriu',ru:'собственный',ex:'My father has his own business.',core:1},
+  {en:'to be an only child',ipa:'/ˈəʊnli tʃaɪld/',ro:'a fi copil unic',ru:'быть единственным ребёнком',ex:'I am an only child.',core:1},
+  {en:'to make someone do something',ipa:'',ro:'a face pe cineva să facă ceva',ru:'заставлять кого-то что-то делать',ex:'My brother tries to make my sister do his chores.',core:1},
+  {en:'to care for each other',ipa:'',ro:'a avea grijă unul de altul',ru:'заботиться друг о друге',ex:'We care for each other.',core:1}
+ ]},
+ {g:'Family values (the spidergram)',tint:'blue',items:[
+  {en:'love',ipa:'/lʌv/',ro:'dragoste',ru:'любовь',ex:'There is a lot of love in my family.'},
+  {en:'respect',ipa:'/rɪˈspekt/',ro:'respect',ru:'уважение',ex:'We show respect to our grandparents.'},
+  {en:'protection',ipa:'/prəˈtekʃn/',ro:'protecție, ocrotire',ru:'защита',ex:'Parents give protection to children.'},
+  {en:'support',ipa:'/səˈpɔːt/',ro:'sprijin',ru:'поддержка',ex:'My family gives me support.'},
+  {en:'responsibility',ipa:'/rɪˌspɒnsəˈbɪləti/',ro:'responsabilitate',ru:'ответственность',ex:'Chores teach us responsibility.'}
+ ]},
+ {g:'Words from the dialogue',tint:'pink',items:[
+  {en:'chore',ipa:'/tʃɔː/',ro:'treabă casnică',ru:'домашняя обязанность',ex:'There are chores that we have to do every day.'},
+  {en:'supper',ipa:'/ˈsʌpə/',ro:'cină',ru:'ужин',ex:'I wash the dishes after supper.'},
+  {en:'pet',ipa:'/pet/',ro:'animal de companie',ru:'домашнее животное',ex:'I take care of the pets.'},
+  {en:'fight',ipa:'/faɪt/',ro:'ceartă',ru:'ссора, драка',ex:'We have fights sometimes.'},
+  {en:'homework',ipa:'/ˈhəʊmwɜːk/',ro:'temă pentru acasă',ru:'домашнее задание',ex:'We help each other with our homework.'},
+  {en:'geography',ipa:'/dʒiˈɒɡrəfi/',ro:'geografie',ru:'география',ex:'My brother is good at geography.'},
+  {en:'to protect',ipa:'/prəˈtekt/',ro:'a proteja',ru:'защищать',ex:'I have a brother who protects me.'}
+ ]},
+ {g:'Word building: -ful and -less',tint:'green',items:[
+  {en:'careful',ipa:'/ˈkeəfl/',ro:'atent, grijuliu',ru:'осторожный, внимательный',ex:'Be careful with the baby.'},
+  {en:'careless',ipa:'/ˈkeələs/',ro:'neatent, neglijent',ru:'небрежный, неосторожный',ex:'Try not to be so careless.'},
+  {en:'useful',ipa:'/ˈjuːsfl/',ro:'util',ru:'полезный',ex:'Thank you, your advice was useful.'},
+  {en:'useless',ipa:'/ˈjuːsləs/',ro:'inutil',ru:'бесполезный',ex:'This old phone is useless.'},
+  {en:'hopeful',ipa:'/ˈhəʊpfl/',ro:'plin de speranță',ru:'полный надежд',ex:'Optimistic people are hopeful.'},
+  {en:'helpless',ipa:'/ˈhelpləs/',ro:'neajutorat',ru:'беспомощный',ex:'A small baby is helpless.'}
+ ]}
+];
+var CORE=[];VOCAB[0].items.forEach(function(w){CORE.push(w)});
+
+/* words that can be tapped inside the texts: [Romanian, Russian] */
+var GL={
+ 'swap':['a schimba între ei','меняться'],'helpful':['săritor, de ajutor','полезный, готовый помочь'],
+ 'hopeless':['fără speranță; nepriceput','безнадёжный; никудышный'],'lucky':['norocos','счастливый, везучий'],
+ 'own':['propriu','собственный'],'only':['unic, singur','единственный'],
+ 'chores':['treburi casnice','домашние обязанности'],'chore':['treabă casnică','домашняя обязанность'],
+ 'supper':['cină','ужин'],'fights':['certuri','ссоры, драки'],'homework':['temă pentru acasă','домашнее задание'],
+ 'pets':['animale de companie','домашние животные'],'geography':['geografie','география'],
+ 'business':['afacere','бизнес, дело'],'dishes':['vasele','посуда'],'maths':['matematică','математика'],
+ 'languages':['limbi','языки'],'kind':['bun, amabil','добрый'],'different':['diferiți','разные'],
+ 'hates':['urăște','ненавидит'],'loves':['iubește','любит'],'tries':['încearcă','пытается'],
+ 'make':['a obliga, a face (pe cineva)','заставлять'],'care':['a avea grijă','заботиться'],
+ 'wash':['a spăla','мыть'],'teacher':['profesor','учитель'],'family':['familie','семья'],
+ 'stories':['povești','истории'],'important':['important','важный'],'role':['rol','роль'],
+ 'fun':['distracție','веселье'],'protects':['protejează','защищает'],'sometimes':['uneori','иногда'],
+ 'always':['întotdeauna','всегда'],'often':['des','часто'],'together':['împreună','вместе']
+};
+var NEWW={swap:1,helpful:1,hopeless:1,lucky:1,own:1,only:1,chores:1,chore:1};
+
+var JOKE=[
+ ['Tim','Who are your family members?'],
+ ['Alex','My five fish, my pet Speedy, my pet Max, and Flick and um…, I’m sure there’s another one – no that’s all of them.'],
+ ['Tim','Do you have any people in your family?'],
+ ['Alex','Oh yeah – my brother, two sisters and my Mum.']
+];
+var DIALOGUE=[
+ ['Helen','Tell me something about your family.'],
+ ['Leo','In our family, there is my mother, my father, three children, a dog and two cats. My father has his own business and my mother is a teacher. My brother, my sister, and I have to help a lot at home. There are chores that we have to do every day. But we swap every week. One week I have to wash the dishes after supper, and then the next week I have to take care of the pets.'],
+ ['Helen','It’s good to have brothers and sisters. I am an only child and I have always wanted to have a sister.'],
+ ['Leo','We have fights sometimes when my brother tries to make my sister and me do his chores. I never do, but my sister does. She is so kind and helpful.'],
+ ['Helen','How do you do your homework?'],
+ ['Leo','We all help each other with our homework. I am good at maths, but my sister is hopeless. She is good at languages, though. And my brother is good at geography. But he loves football more and hates doing his homework.'],
+ ['Helen','You are lucky to have such a big family.'],
+ ['Leo','I am. We are different but we care for each other.']
+];
+var ALLAN=[
+ 'My name is Allan. I have two brothers, Peter and Eddy. Peter is sixteen and he is my good friend. He helps with homework and we often do the chores together. He is very good at telling stories and we like listening to him.',
+ 'Eddy is only four but he knows he is an important family member. He likes to play, have fun and try new things. His role in the family is to make us happy every day.'
+];
+
+/* ---------- QUIZ ITEMS ---------- */
+var Q_JOKE=[
+ {q:'Why is the joke funny?',opts:['Alex counts his pets and fish before the people in his family.','Alex has no brothers or sisters.','Alex forgets his own name.'],a:'Alex counts his pets and fish before the people in his family.',ex:'Tim asks about family members and Alex lists animals first. The people come last.'},
+ {q:'How many people does Alex mention in the end?',opts:['Three','Four','Five'],a:'Four',ex:'A brother, two sisters and Mum make four people.',fixed:1}
+];
+var Q_DISAGREE=[
+ {q:'Disagree: <i>“Leo has two sisters and no brothers.”</i>',opts:['No. He has one sister and one brother.','Yes, he has two sisters.','No. He is an only child.'],a:'No. He has one sister and one brother.',ex:'Leo says: “My brother, my sister, and I”. There are three children.'},
+ {q:'Disagree: <i>“There are no chores to do in Leo’s family.”</i>',opts:['No. There are chores that they have to do every day.','Yes, they never help at home.','No. Only the father does the chores.'],a:'No. There are chores that they have to do every day.',ex:'Leo says the children have to do chores every day.'},
+ {q:'Disagree: <i>“Leo helps his sister with languages.”</i>',opts:['No. His sister is good at languages. Leo is good at maths.','Yes, Leo is good at languages.','Yes, his sister is hopeless at languages.'],a:'No. His sister is good at languages. Leo is good at maths.',ex:'The sister is good at languages, but she is hopeless at maths.'},
+ {q:'Disagree: <i>“Leo’s brother likes doing his homework.”</i>',opts:['No. He hates doing his homework. He loves football more.','Yes, he loves homework more than football.','No. He is hopeless at football.'],a:'No. He hates doing his homework. He loves football more.',ex:'“He loves football more and hates doing his homework.”'},
+ {q:'Disagree: <i>“Leo and his brother never fight.”</i>',opts:['No. They have fights sometimes.','Yes, they always help each other.','No. They fight every day.'],a:'No. They have fights sometimes.',ex:'“We have fights sometimes when my brother tries to make my sister and me do his chores.”'},
+ {q:'Disagree: <i>“Helen has a sister.”</i>',opts:['No. She is an only child.','Yes, she has two sisters.','No. She has a brother.'],a:'No. She is an only child.',ex:'Helen says: “I am an only child and I have always wanted to have a sister.”'},
+ {q:'Disagree: <i>“Leo’s mother has her own business.”</i>',opts:['No. His mother is a teacher. His father has his own business.','Yes, she is a teacher with a business.','No. His mother is a farmer.'],a:'No. His mother is a teacher. His father has his own business.',ex:'“My father has his own business and my mother is a teacher.”'}
+];
+var WHO=['Leo','Leo’s sister','Leo’s brother','Helen','Leo’s father'];
+var Q_WHO=[
+ {q:'Who hates doing his homework?',opts:WHO,a:'Leo’s brother',fixed:1,ex:'He loves football more and hates doing his homework.'},
+ {q:'Who is good at languages?',opts:WHO,a:'Leo’s sister',fixed:1,ex:'“She is good at languages, though.”'},
+ {q:'Who is good at maths?',opts:WHO,a:'Leo',fixed:1,ex:'“I am good at maths, but my sister is hopeless.”'},
+ {q:'Who has always wanted to have a sister?',opts:WHO,a:'Helen',fixed:1,ex:'Helen is an only child.'},
+ {q:'Who has his own business?',opts:WHO,a:'Leo’s father',fixed:1,ex:'Leo’s mother is a teacher.'},
+ {q:'Who is kind and helpful, and does the brother’s chores?',opts:WHO,a:'Leo’s sister',fixed:1,ex:'“I never do, but my sister does. She is so kind and helpful.”'}
+];
+var BANK6=['own','helpful','swap','lucky','hopeless','only'];
+var Q_EX6=[
+ {q:'I have read this book. Can I ____ with you?',opts:BANK6,a:'swap',fixed:1,blank:1,ex:'To swap = to give something and get something in exchange.'},
+ {q:'My uncle is a farmer. He has his ____ farm.',opts:BANK6,a:'own',fixed:1,blank:1,ex:'His own farm = a farm that belongs to him.'},
+ {q:'Mary has no brothers or sisters. She is an ____ child.',opts:BANK6,a:'only',fixed:1,blank:1,ex:'An only child has no brothers or sisters.'},
+ {q:'John likes to help people. He is ____.',opts:BANK6,a:'helpful',fixed:1,blank:1,ex:'Helpful = ready to help.'},
+ {q:'Sam never tries to improve his English, and the teacher says he is ____.',opts:BANK6,a:'hopeless',fixed:1,blank:1,ex:'Hopeless = very bad at something and not improving.'},
+ {q:'They say I am ____. I have a brother who protects me.',opts:BANK6,a:'lucky',fixed:1,blank:1,ex:'Lucky = having good luck or good things in life.'}
+];
+function wordsQuiz(){
+ var pool=CORE.slice(0,5).concat(VOCAB[1].items.slice(0,2),VOCAB[2].items.slice(0,2)),items=[];
+ var dirs=['en2ro','en2ru','ro2en','ru2en'],used=shuffle(pool).slice(0,8);
+ used.forEach(function(w,i){
+  var d=dirs[i%4],from=d.slice(0,2),to=d.slice(3);
+  var others=shuffle(pool.filter(function(x){return x!==w})).slice(0,2);
+  var opts=[w[to]].concat(others.map(function(x){return x[to]}));
+  var name={en:'English',ro:'Romanian',ru:'Russian'};
+  items.push({q:(from==='en'?'Choose the '+name[to]+' translation of <b>'+w.en+'</b>.':'Which English word means <b>'+w[from]+'</b>?'),opts:opts,a:w[to],ex:w.en+' = '+w.ro+' = '+w.ru});
+ });
+ return shuffle(items);
+}
+var Q_SOUND=(function(){
+ var A='/ə/',I='/i/',ws=[['mother',A],['baby',I],['teacher',A],['lucky',I],['brother',A],['geography',I],['writer',A],['happy',I],['father',A],['only',I]];
+ return ws.map(function(p){return {q:'Which sound is at the end of <b>'+p[0]+'</b>?',opts:[A,I],a:p[1],fixed:1,say:p[0],
+  ex:p[1]===A?'Written “-er”, pronounced with the weak sound /ə/, like in “mother”.':'Written “-y”, pronounced with the short sound /i/, like in “family”.'}});
+})();
+
+var FL=['helpful','useful','hopeful','careful','helpless','useless','hopeless','careless'];
+var Q_FL1=[
+ {q:'<b>help + less</b> = “without help” = ____',type:'type',acc:['helpless'],ex:'help + less = helpless.'},
+ {q:'<b>hope + ful</b> = “full of hope” = ____',type:'type',acc:['hopeful'],ex:'hope + ful = hopeful (the silent e stays).'},
+ {q:'<b>use + less</b> = “without use” = ____',type:'type',acc:['useless'],ex:'use + less = useless (the silent e is dropped).'},
+ {q:'<b>care + ful</b> = “full of care” = ____',type:'type',acc:['careful'],ex:'care + ful = careful.'},
+ {q:'<b>colour + ful</b> = “full of colour” = ____',type:'type',acc:['colourful','colorful'],ex:'colour + ful = colourful.'},
+ {q:'A person with no home is ____. (<b>home + less</b>)',type:'type',acc:['homeless'],ex:'home + less = homeless.'}
+];
+var Q_FL2=[
+ {q:'You should be ____ not to wake your baby sister.',opts:FL,a:'careful',acc:['careful'],fixed:1,blank:1,ex:'Careful = paying attention so that nothing bad happens.'},
+ {q:'Thank you for your advice. It was really ____.',opts:FL,a:'useful',acc:['useful','helpful'],fixed:1,blank:1,ex:'Both useful and helpful are possible: the advice helped you.'},
+ {q:'John’s grandfather says he cannot learn to text-message. He is ____.',opts:FL,a:'hopeless',acc:['hopeless','useless'],fixed:1,blank:1,ex:'Hopeless at something = very bad at it.'},
+ {q:'If you are optimistic, you are ____.',opts:FL,a:'hopeful',acc:['hopeful'],fixed:1,blank:1,ex:'Optimistic people are full of hope = hopeful.'},
+ {q:'You made a few mistakes. Try not to be so ____ in the future.',opts:FL,a:'careless',acc:['careless'],fixed:1,blank:1,ex:'Careless = not careful, making mistakes.'}
+];
+var Q_HT=[
+ {q:'My sister ____ help at home every day.',opts:['have to','has to','having to'],a:'has to',fixed:1,blank:1,ex:'With he / she / it we use <b>has to</b>.'},
+ {q:'We ____ wash the dishes after supper.',opts:['have to','has to','don’t have'],a:'have to',fixed:1,blank:1,ex:'With I / you / we / they we use <b>have to</b>.'},
+ {q:'My brother ____ take care of the pets on Monday.',opts:['have to','has to','have'],a:'has to',fixed:1,blank:1,ex:'Brother = he, so <b>has to</b>.'},
+ {q:'____ you have to do chores at home?',opts:['Do','Does','Have'],a:'Do',fixed:1,blank:1,ex:'Question: <b>Do</b> + I / you / we / they + have to …?'},
+ {q:'____ your mother have to work on Saturday?',opts:['Do','Does','Has'],a:'Does',fixed:1,blank:1,ex:'Question: <b>Does</b> + he / she / it + have to …? (no “s” on have).'},
+ {q:'It’s Sunday. My brother ____ do his homework. He can play football.',opts:['has to','doesn’t have to','mustn’t'],a:'doesn’t have to',fixed:1,blank:1,ex:'<b>Doesn’t have to</b> = it is not necessary.'},
+ {q:'We ____ do chores every day. It is a rule in our family.',opts:['have to','don’t have to','doesn’t have to'],a:'have to',fixed:1,blank:1,ex:'A rule = obligation = <b>have to</b>.'},
+ {q:'Does she have to help? – No, she ____.',opts:['doesn’t','don’t','hasn’t'],a:'doesn’t',fixed:1,blank:1,ex:'Short answer: No, she <b>doesn’t</b>.'}
+];
+var Q_HG=[
+ {q:'I ____ two cousins.',opts:['have got','has got','am got'],a:'have got',fixed:1,blank:1,ex:'I / you / we / they + <b>have got</b>.'},
+ {q:'She ____ a big family.',opts:['have got','has got','is got'],a:'has got',fixed:1,blank:1,ex:'He / she / it + <b>has got</b>.'},
+ {q:'____ you got any brothers or sisters?',opts:['Have','Has','Do'],a:'Have',fixed:1,blank:1,ex:'Question: <b>Have</b> + you + got …?'},
+ {q:'____ your grandfather got a car?',opts:['Have','Has','Does'],a:'Has',fixed:1,blank:1,ex:'Question: <b>Has</b> + he / she / it + got …?'},
+ {q:'We ____ got a cat, but we have got a dog.',opts:['haven’t','hasn’t','don’t'],a:'haven’t',fixed:1,blank:1,ex:'Negative: <b>haven’t got</b> / <b>hasn’t got</b>.'},
+ {q:'Have you got a sister? – No, I ____.',opts:['haven’t','hasn’t','don’t'],a:'haven’t',fixed:1,blank:1,ex:'Short answer: Yes, I <b>have</b>. / No, I <b>haven’t</b>.'},
+ {q:'Leo’s father ____ his own business.',opts:['have got','has got','is got'],a:'has got',fixed:1,blank:1,ex:'Leo’s father = he, so <b>has got</b>.'},
+ {q:'How many grandparents ____ you got?',opts:['have','has','do'],a:'have',fixed:1,blank:1,ex:'<b>How many</b> + noun + have you got?'}
+];
+
+var SPEAK=[
+ ['How big is your family?','There are ___ people in my family.'],
+ ['Who are your family members?','In my family there is / are ___.'],
+ ['How many grandparents have you got?','I have got ___ grandparents.'],
+ ['How many cousins have you got?','I have got ___ cousins. / I haven’t got any cousins.'],
+ ['Who is the oldest in your family?','The oldest is my ___.'],
+ ['Who is the youngest in your family?','The youngest is my ___.']
+];
+var SPIDER=[['love','dragoste','любовь'],['respect','respect','уважение'],['protection','protecție','защита'],['care for each other','a avea grijă unul de altul','заботиться друг о друге'],['support','sprijin','поддержка'],['responsibility','responsabilitate','ответственность']];
+
+/* ---------- HELPERS ---------- */
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function norm(s){return String(s).toLowerCase().replace(/’/g,"'").replace(/[.!?,;]+$/,'').replace(/\s+/g,' ').trim()}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+var S={name:'',q:{}};
+try{var raw=localStorage.getItem('uf-quest');if(raw){var o=JSON.parse(raw);if(o&&o.q)S=o}}catch(e){}
+function save(){try{localStorage.setItem('uf-quest',JSON.stringify(S))}catch(e){}}
+function totalXP(){var t=0;for(var k in S.q)t+=S.q[k].pts;return t}
+var app=document.getElementById('app');
+var canSay=('speechSynthesis' in window)&&typeof SpeechSynthesisUtterance!=='undefined';
+function say(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function listenBtn(t){return canSay?'<button class="listen" type="button" data-say="'+esc(t)+'" aria-label="Listen">Listen</button>':''}
+function rate(c,t){var p=t?c/t:0;return p>=.85?3:p>=.6?2:1}
+function starsSVG(n){var s='';for(var i=0;i<3;i++)s+='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="'+(i<n?'star-on':'star-off')+'" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';return '<span class="stars" role="img" aria-label="'+n+' of 3 stars">'+s+'</span>'}
+function tri(en,ro,ru){return '<div class="lng"><span class="lang" style="background:var(--green)">EN</span><span>'+en+'</span></div><div class="lng"><span class="lang">RO</span><span>'+ro+'</span></div><div class="lng"><span class="lang ru">RU</span><span>'+ru+'</span></div>'}
+function mk(root,cls,html){var d=document.createElement('section');d.className=cls||'card';if(html)d.innerHTML=html;root.appendChild(d);return d}
+function copyText(text,btn,host){
+ var label=btn.textContent;
+ function ok(){btn.textContent='Copied';setTimeout(function(){btn.textContent=label},1600)}
+ function fallback(){
+  var t=host.querySelector('textarea.copybox');
+  if(!t){t=document.createElement('textarea');t.className='copybox';t.readOnly=true;t.style.minHeight='110px';t.style.marginTop='8px';host.appendChild(t)}
+  t.value=text;t.focus();t.select();btn.textContent='Select and copy the text below';
+ }
+ try{navigator.clipboard.writeText(text).then(ok,fallback)}catch(e){fallback()}
+}
+
+/* ---------- QUIZ ENGINE ---------- */
+function quiz(root,id,title,items,intro){
+ var card=mk(root,'card quiz');card.id='q-'+id;
+ var list,i,pts,c,tries;
+ function start(){list=typeof items==='function'?items():items;i=0;pts=0;c=0;step()}
+ function step(){
+  if(i>=list.length)return finish();
+  var it=list[i];tries=0;
+  var opts=it.type?null:(it.fixed?it.opts.slice():shuffle(it.opts));
+  var maxT=opts?Math.min(2,opts.length-1):2;
+  var acc=(it.acc||[it.a]).map(norm);
+  card.innerHTML='<div class="qhead"><h3>'+title+'</h3><span class="count">'+(i+1)+' / '+list.length+'</span></div><div class="bar"><i style="width:'+(i/list.length*100)+'%"></i></div>'+(intro&&i===0?'<p class="intro">'+intro+'</p>':'')+'<p class="prompt"></p><div class="answers'+(it.blank&&opts&&opts.length>3?' bank':'')+'"></div><div class="fb" role="status" aria-live="polite"></div><div class="nav"></div>';
+  var prompt=card.querySelector('.prompt'),ans=card.querySelector('.answers'),fb=card.querySelector('.fb'),nav=card.querySelector('.nav');
+  function showQ(f){prompt.innerHTML=it.blank||it.type?it.q.replace('____',f?'<b class="fill">'+f+'</b>':'<span class="blank">&nbsp;</span>'):it.q}
+  showQ();
+  if(it.say)nav.innerHTML=listenBtn(it.say);
+  function lock(){ans.querySelectorAll('button,input').forEach(function(b){b.disabled=true})}
+  function award(){var p=tries===0?10:tries===1?5:0;pts+=p;if(tries===0)c++;return p}
+  function next(){
+   var last=i===list.length-1;
+   nav.insertAdjacentHTML('beforeend','<button class="btn" type="button">'+(last?'See my score':'Next')+'</button>');
+   var b=nav.querySelector('.btn');b.focus();b.onclick=function(){i++;step()};
+  }
+  function right(shown){var p=award();showQ(shown);fb.innerHTML='<span class="ok">Correct!'+(p?' +'+p+' XP':'')+'</span> '+(it.ex||'');lock();next()}
+  function reveal(){showQ(it.a);fb.innerHTML='<span class="no">Not quite.</span> The answer is <b>'+it.a+'</b>. '+(it.ex||'');lock();
+   ans.querySelectorAll('button.opt').forEach(function(b){if(acc.indexOf(norm(b.textContent))>-1)b.classList.add('good')});next()}
+  if(opts){
+   opts.forEach(function(o){
+    var b=document.createElement('button');b.type='button';b.className='opt';b.textContent=o;
+    b.onclick=function(){
+     if(acc.indexOf(norm(o))>-1){b.classList.add('good');right(o)}
+     else{b.classList.add('bad','shake');b.disabled=true;tries++;
+      if(tries>=maxT)reveal();else fb.innerHTML='<span class="no">Try again.</span> You can still earn 5 XP.'}
+    };
+    ans.appendChild(b);
+   });
+  }else{
+   ans.className='typebox';
+   ans.innerHTML='<input type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your answer" placeholder="Type the word"><button class="btn" type="button">Check</button>';
+   var inp=ans.querySelector('input'),go=ans.querySelector('button');
+   function check(){
+    var v=norm(inp.value);if(!v)return;
+    if(acc.indexOf(v)>-1){right(it.a||acc[0])}
+    else{tries++;inp.classList.add('shake');
+     if(tries>=2){it.a=it.a||it.acc[0];reveal()}
+     else{fb.innerHTML='<span class="no">Try again.</span> Hint: it starts with “'+acc[0].charAt(0)+'” and has '+acc[0].length+' letters.';inp.select()}}
+   }
+   go.onclick=check;inp.onkeydown=function(e){if(e.key==='Enter')check()};
+   inp.focus();
+  }
+ }
+ function finish(){
+  var rec=S.q[id];if(!rec||pts>=rec.pts){S.q[id]={pts:pts,c:c,t:list.length};save()}
+  card.innerHTML='<div class="result"><h3>'+title+'</h3>'+starsSVG(rate(c,list.length))+'<div class="big">'+c+' of '+list.length+' right the first time</div><p class="note">+'+pts+' XP this round. Best round: '+S.q[id].pts+' XP.</p><button class="btn" type="button">Play again</button></div>';
+  card.querySelector('.btn').onclick=start;
+  refreshHud();
+ }
+ start();
+}
+
+/* ---------- BLOCKS ---------- */
+function tokenise(t){return t.replace(/[A-Za-z]+/g,function(m){var k=m.toLowerCase();return GL[k]?'<button type="button" class="w'+(NEWW[k]?' new':'')+'" data-k="'+k+'">'+m+'</button>':m})}
+
+function readBlock(root,title,lines,note){
+ var card=mk(root,'card','<h2>'+title+'</h2><p class="note">'+note+'</p><div class="dialogue">'+lines.map(function(l){
+  return '<div class="line"><span class="who '+l[0].toLowerCase()+'">'+l[0]+'</span><p class="say">'+tokenise(l[1])+'</p>'+listenBtn(l[1])+'</div>'}).join('')+'</div><div class="gloss hidden" role="status" aria-live="polite"></div>');
+ var g=card.querySelector('.gloss');
+ card.addEventListener('click',function(e){
+  var w=e.target.closest('.w');if(!w)return;
+  var k=w.dataset.k,x=GL[k];
+  g.innerHTML='<b>'+k+'</b><span><span class="lang">RO</span> '+x[0]+'</span><span><span class="lang ru">RU</span> '+x[1]+'</span>';
+  g.classList.remove('hidden');
+ });
+}
+
+function vocabBlock(root){
+ var card=mk(root,'card','<h2>New vocabulary</h2><p class="note">Every word has its pronunciation, Romanian and Russian translation, and an example from the lesson. Press Listen to hear it.</p><div class="row-wrap" style="margin-top:8px"><button class="btn ghost small" type="button" id="cover">Test myself: hide translations</button></div><div id="vg"></div>');
+ var vg=card.querySelector('#vg');
+ VOCAB.forEach(function(gr){
+  var colour={green:'var(--green)',blue:'var(--blue)',pink:'var(--pink)'}[gr.tint];
+  var h='<div class="grouphead"><i style="background:'+colour+'"></i><h3>'+gr.g+'</h3></div><div class="vgrid">';
+  gr.items.forEach(function(w){
+   h+='<div class="vc"><div class="row-wrap" style="justify-content:space-between"><span class="en">'+w.en+'</span>'+listenBtn(w.en)+'</div>'+(w.ipa?'<span class="ipa">'+w.ipa+'</span>':'')+'<div class="tr"><span class="lang">RO</span><span>'+w.ro+'</span></div><div class="tr"><span class="lang ru">RU</span><span>'+w.ru+'</span></div><span class="eg">'+w.ex+'</span></div>';
+  });
+  vg.insertAdjacentHTML('beforeend',h+'</div>');
+ });
+ var btn=card.querySelector('#cover'),covered=false;
+ btn.onclick=function(){
+  covered=!covered;
+  vg.querySelectorAll('.vc').forEach(function(v){v.classList.toggle('cover',covered);v.classList.remove('shown')});
+  btn.textContent=covered?'Show all translations':'Test myself: hide translations';
+ };
+ vg.addEventListener('click',function(e){var v=e.target.closest('.vc.cover');if(v&&!e.target.closest('.listen'))v.classList.toggle('shown')});
+}
+
+function matchGame(root){
+ var card=mk(root,'card');var lang='ro';
+ function round(){
+  var pool=shuffle(CORE).slice(0,6),right=shuffle(pool),sel=null,done=0,first=0,missed={};
+  card.innerHTML='<h3>Match the words</h3><p class="note">Tap an English word, then tap its translation. Each first-try match gives 5 XP.</p><div class="row-wrap" style="margin-top:8px"><button class="chip'+(lang==='ro'?' on':'')+'" data-l="ro" type="button">Romanian</button><button class="chip'+(lang==='ru'?' on':'')+'" data-l="ru" type="button">Russian</button></div><div class="matchgrid"></div><div class="fb" role="status" aria-live="polite"></div>';
+  var grid=card.querySelector('.matchgrid'),fb=card.querySelector('.fb');
+  pool.forEach(function(w,i){
+   var l=document.createElement('button');l.type='button';l.textContent=w.en;l.dataset.k=w.en;l.style.gridColumn='1';grid.appendChild(l);
+   var r=document.createElement('button');r.type='button';r.textContent=right[i][lang];r.dataset.k=right[i].en;r.style.gridColumn='2';grid.appendChild(r);
+   l.dataset.side='l';r.dataset.side='r';
+  });
+  grid.addEventListener('click',function(e){
+   var b=e.target.closest('button');if(!b||b.classList.contains('done'))return;
+   if(b.dataset.side==='l'){if(sel)sel.classList.remove('sel');sel=b;b.classList.add('sel');return}
+   if(!sel)return;
+   if(sel.dataset.k===b.dataset.k){
+    sel.classList.remove('sel');sel.classList.add('done');b.classList.add('done');
+    if(!missed[sel.dataset.k])first++;
+    sel=null;done++;
+    if(done===6){
+     var p=first*5,rec=S.q.match;if(!rec||p>=rec.pts){S.q.match={pts:p,c:first,t:6};save()}
+     fb.innerHTML='<div class="result">'+starsSVG(rate(first,6))+'<div class="big">'+first+' of 6 on the first try (+'+p+' XP)</div><button class="btn" type="button" id="again">New round</button></div>';
+     fb.querySelector('#again').onclick=round;refreshHud();
+    }
+   }else{
+    missed[sel.dataset.k]=true;b.classList.add('shake');sel.classList.add('shake');
+    var s2=sel;setTimeout(function(){b.classList.remove('shake');s2.classList.remove('shake')},350);
+    fb.innerHTML='<span class="no">Not that one.</span> Try again.';
+   }
+  });
+  card.querySelectorAll('[data-l]').forEach(function(c){c.onclick=function(){lang=c.dataset.l;round()}});
+ }
+ round();
+}
+
+function speakCard(root){
+ var card=mk(root,'card','<h2>Speaking: ask and answer in pairs</h2><p class="note">Press the button to get a question. Ask your partner, then answer with the frame.</p><div class="spin" id="sp" aria-live="polite">Press “New question”.</div><div class="row-wrap"><button class="btn" id="spb" type="button">New question</button></div>');
+ var last=-1,sp=card.querySelector('#sp');
+ card.querySelector('#spb').onclick=function(){
+  var n;do{n=Math.floor(Math.random()*SPEAK.length)}while(n===last&&SPEAK.length>1);last=n;
+  sp.innerHTML=SPEAK[n][0]+'<br><span class="note">Answer: '+SPEAK[n][1]+'</span> '+listenBtn(SPEAK[n][0]);
+ };
+}
+function spiderCard(root){
+ var card=mk(root,'card','<h2>The good things in a family</h2><p class="note">Tap a word. Then say the sentence aloud and finish it with your own idea.</p><div class="row-wrap" id="sw" style="margin:8px 0"></div><div class="spin" id="sd">The good thing about my family is …</div>');
+ var sw=card.querySelector('#sw'),sd=card.querySelector('#sd');
+ SPIDER.forEach(function(s){
+  var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s[0];
+  b.onclick=function(){
+   sw.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+   sd.innerHTML='In my family there is <b>'+s[0]+'</b>, because …<br><span class="note"><span class="lang">RO</span> '+s[1]+' &nbsp; <span class="lang ru">RU</span> '+s[2]+'</span>';
+  };
+  sw.appendChild(b);
+ });
+ mk(root,'card','<h3>Useful phrases</h3><div class="explain" style="margin-top:6px">'+
+  '<div class="eg-box"><b>to be an only child</b> · a fi copil unic · быть единственным ребёнком</div>'+
+  '<div class="eg-box"><b>to make someone do something</b> · a face pe cineva să facă ceva · заставлять кого-то что-то делать</div>'+
+  '<div class="eg-box"><b>to care for each other</b> · a avea grijă unul de altul · заботиться друг о друге</div></div>');
+}
+function likeCard(root){
+ mk(root,'card','<h2>Speaking: Leo’s family</h2><p class="note">Speak about what you like and dislike in Leo’s family. Use these frames.</p><div class="explain" style="margin-top:8px">'+
+  '<div class="eg-box">I like … because …<br><span class="note">Example: I like that they swap the chores every week, because it is fair.</span></div>'+
+  '<div class="eg-box">I don’t like … because …<br><span class="note">Example: I don’t like that his brother makes them do his chores.</span></div>'+
+  '<div class="eg-box">I think Leo is … because …<br><span class="note">Use: lucky, helpful, different.</span></div></div>');
+}
+function soundCard(root){
+ var A=['mother','father','sister','brother','teacher','writer'],I=['family','baby','lucky','happy','only','geography'];
+ function chips(a){return a.map(function(w){return '<button class="chip" type="button" data-say="'+w+'">'+w+'</button>'}).join('')}
+ mk(root,'card','<h2>Sounds and spelling</h2><div class="explain">'+
+  tri('Words ending in <b>-er</b> end with the weak sound <b>/ə/</b>. Words ending in <b>-y</b> end with the short sound <b>/i/</b>.','Cuvintele terminate în <b>-er</b> au la final sunetul slab <b>/ə/</b>. Cuvintele terminate în <b>-y</b> au la final sunetul scurt <b>/i/</b>.','Слова на <b>-er</b> заканчиваются слабым звуком <b>/ə/</b>. Слова на <b>-y</b> заканчиваются коротким звуком <b>/i/</b>.')+
+  '</div><h3 style="margin-top:12px">Ending in /ə/</h3><div class="row-wrap" style="margin-top:6px">'+chips(A)+'</div><h3 style="margin-top:12px">Ending in /i/</h3><div class="row-wrap" style="margin-top:6px">'+chips(I)+'</div>'+(canSay?'<p class="note" style="margin-top:8px">Tap a word to hear it.</p>':''));
+}
+
+/* ---------- GRAMMAR CARDS ---------- */
+function flCard(root){
+ mk(root,'card','<h2>Grammar: word building with -ful and -less</h2><div class="explain">'+
+  tri('Add <b>-ful</b> (“full of”, “with”) or <b>-less</b> (“without”) to a noun to make an adjective.','Adăugăm <b>-ful</b> („plin de”, „cu”) sau <b>-less</b> („fără”) la un substantiv și obținem un adjectiv.','Добавляем <b>-ful</b> («полный чего-то», «с») или <b>-less</b> («без») к существительному и получаем прилагательное.')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th>Noun</th><th>+ ful</th><th>+ less</th></tr>'+
+  '<tr><td><b>help</b><br>ajutor · помощь</td><td><b>helpful</b><br>săritor · полезный</td><td><b>helpless</b><br>neajutorat · беспомощный</td></tr>'+
+  '<tr><td><b>use</b><br>folos · польза</td><td><b>useful</b><br>util · полезный</td><td><b>useless</b><br>inutil · бесполезный</td></tr>'+
+  '<tr><td><b>hope</b><br>speranță · надежда</td><td><b>hopeful</b><br>plin de speranță · полный надежд</td><td><b>hopeless</b><br>fără speranță · безнадёжный</td></tr>'+
+  '<tr><td><b>care</b><br>grijă · забота</td><td><b>careful</b><br>atent · осторожный</td><td><b>careless</b><br>neatent · небрежный</td></tr></table></div>'+
+  '<h3 style="margin-top:14px">Remember</h3><div class="explain" style="margin-top:6px">'+
+  '<div class="eg-box">The noun stays the same: hope + ful = hope<b>ful</b>, care + less = care<b>less</b>. Only <b>use</b> loses its e: use + ful = <b>useful</b>.</div>'+
+  '<div class="eg-box">The stress stays on the first part: <b>HELP</b>ful, <b>HOPE</b>less. The ending is weak: /fl/ and /ləs/.</div>'+
+  '<div class="eg-box">More words: colourful (colorat · красочный), painful (dureros · болезненный), thankful (recunoscător · благодарный), homeless (fără adăpost · бездомный), endless (fără sfârșit · бесконечный).</div></div>'+
+  '<h3 style="margin-top:14px">In the lesson</h3><div class="eg-box"><i>She is so kind and <b>helpful</b>. My sister is <b>hopeless</b>.</i></div>');
+}
+function htCard(root){
+ mk(root,'card','<h2>Grammar: have to / has to</h2><div class="explain">'+
+  tri('<b>have to</b> = you must do it because of a rule or a situation. <b>don’t have to</b> = it is not necessary (it does not mean “forbidden”).','<b>have to</b> = a trebui, a fi nevoit să (din cauza unei reguli sau a situației). <b>don’t have to</b> = nu este nevoie (NU înseamnă „este interzis”).','<b>have to</b> = приходится, должен (из-за правила или обстоятельств). <b>don’t have to</b> = не нужно, нет необходимости (НЕ значит «нельзя»).')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th></th><th>Affirmative</th><th>Negative</th><th>Question</th></tr>'+
+  '<tr><td>I / you / we / they</td><td>I <b>have to</b> wash the dishes.</td><td>We <b>don’t have to</b> cook.</td><td><b>Do</b> you <b>have to</b> help?</td></tr>'+
+  '<tr><td>he / she / it</td><td>She <b>has to</b> feed the pets.</td><td>He <b>doesn’t have to</b> wash up.</td><td><b>Does</b> he <b>have to</b> help?</td></tr></table></div>'+
+  '<p class="note" style="margin-top:8px">Short answers: Yes, I <b>do</b>. / No, she <b>doesn’t</b>.</p>'+
+  '<h3 style="margin-top:14px">In the lesson</h3><div class="eg-box"><i>One week I <b>have to</b> wash the dishes after supper. There are chores that we <b>have to</b> do every day.</i></div>');
+}
+function hgCard(root){
+ mk(root,'card','<h2>Grammar: have got</h2><div class="explain">'+
+  tri('<b>have got</b> means “to have”. We use it for family, pets and things that belong to us.','<b>have got</b> = a avea. Îl folosim pentru familie, animale și lucruri care ne aparțin.','<b>have got</b> = иметь, «у меня есть». Используем для семьи, животных и вещей.')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th></th><th>Affirmative</th><th>Negative</th><th>Question</th></tr>'+
+  '<tr><td>I / you / we / they</td><td>I <b>have got</b> a brother. (I’ve got)</td><td>I <b>haven’t got</b> a cat.</td><td><b>Have</b> you <b>got</b> a pet?</td></tr>'+
+  '<tr><td>he / she / it</td><td>She <b>has got</b> two sisters. (She’s got)</td><td>He <b>hasn’t got</b> a car.</td><td><b>Has</b> she <b>got</b> cousins?</td></tr></table></div>'+
+  '<p class="note" style="margin-top:8px">Short answers: Yes, I <b>have</b>. / No, he <b>hasn’t</b>.</p>'+
+  '<div class="eg-box" style="margin-top:10px"><b>Do not mix them up:</b> I have got a sister (family) ≠ I have to help my sister (duty). <i>Nu le confunda · Не путайте</i></div>'+
+  '<h3 style="margin-top:14px">In the lesson</h3><div class="eg-box"><i>How many grandparents <b>have</b> you <b>got</b>? How many cousins <b>have</b> you <b>got</b>?</i></div>');
+}
+
+/* ---------- WRITING ---------- */
+var DR={};try{DR=JSON.parse(localStorage.getItem('uf-draft')||'{}')||{}}catch(e){DR={}}
+function setDraft(k,v){DR[k]=v;try{localStorage.setItem('uf-draft',JSON.stringify(DR))}catch(e){}}
+function attachGloss(card){
+ var g=card.querySelector('.gloss');
+ card.addEventListener('click',function(e){
+  var w=e.target.closest('.w');if(!w)return;
+  var k=w.dataset.k,x=GL[k];
+  g.innerHTML='<b>'+k+'</b><span><span class="lang">RO</span> '+x[0]+'</span><span><span class="lang ru">RU</span> '+x[1]+'</span>';
+  g.classList.remove('hidden');
+ });
+}
+function checkSentence(word,val){
+ var v=val.trim();if(!v)return null;
+ var probs=[];
+ if(!new RegExp('\\b'+word+'(s|ed|ing)?\\b','i').test(v))probs.push('Use the word “'+word+'”.');
+ if(v.split(/\s+/).length<4)probs.push('Write at least 4 words.');
+ if(!/^[A-Z]/.test(v))probs.push('Start with a capital letter.');
+ if(!/[.!?]$/.test(v))probs.push('End with a full stop.');
+ return probs;
+}
+function writeSentences(root){
+ var words=['swap','own','only','helpful','hopeless','lucky'];
+ var rows=words.map(function(w){return '<div class="sentrow"><label for="ws-'+w+'">'+w+'</label><input id="ws-'+w+'" type="text" autocomplete="off" placeholder="Write a sentence with “'+w+'”"><div class="st note"></div></div>'}).join('');
+ var card=mk(root,'card','<h2>Exercise 6: write your own sentences</h2><p class="note">Use each word in a sentence about you, your family or your friends. Write at least 4 words, start with a capital letter and end with a full stop.</p><div>'+rows+'</div><div class="row-wrap" style="margin-top:12px"><button class="btn" type="button" id="chk">Check my sentences</button></div><div class="fb" role="status" aria-live="polite"></div>');
+ var fb=card.querySelector('.fb');
+ words.forEach(function(w){var inp=card.querySelector('#ws-'+w);if(DR['ws-'+w])inp.value=DR['ws-'+w];inp.oninput=function(){setDraft('ws-'+w,inp.value)}});
+ card.querySelector('#chk').onclick=function(){
+  var pass=0,filled=0;
+  words.forEach(function(w){
+   var inp=card.querySelector('#ws-'+w),st=inp.parentNode.querySelector('.st'),pr=checkSentence(w,inp.value);
+   if(pr===null){st.textContent='';return}
+   filled++;
+   if(!pr.length){pass++;st.innerHTML='<span style="color:var(--good);font-weight:800">Good sentence.</span>'}
+   else st.innerHTML='<span style="color:var(--bad);font-weight:800">Check:</span> '+pr.join(' ');
+  });
+  if(filled<6){fb.innerHTML='<span class="no">Write all six sentences, then check again.</span>';return}
+  var p=pass*10,rec=S.q.wsent;if(!rec||p>=rec.pts){S.q.wsent={pts:p,c:pass,t:6};save()}
+  fb.innerHTML='<div class="result">'+starsSVG(rate(pass,6))+'<div class="big">'+pass+' of 6 sentences are correct (+'+p+' XP)</div><p class="note">Fix the sentences marked “Check” and press the button again.</p></div>';
+  refreshHud();
+ };
+}
+var CH=[
+ ['At least 40 words',function(t,n){return n>=40}],
+ ['Names a family member (my brother, my mum…)',function(t){return /\b(brother|sister|mother|mum|mom|father|dad|grandmother|grandfather|grandma|grandpa|cousin|aunt|uncle|parents?)\b/i.test(t)}],
+ ['Gives an age (for example “is twelve”)',function(t){return /\b(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy)\b/i.test(t)}],
+ ['Says what he or she likes or does (likes, helps, plays…)',function(t){return /\b(likes?|loves?|helps?|plays?|enjoys?|cooks?|works?)\b/i.test(t)}],
+ ['Uses a -ful or -less word (helpful, careful…)',function(t){return /\b(?!unless\b)[a-z]{2,}(ful|less)\b/i.test(t)}],
+ ['Uses a lesson word or phrase (own, lucky, only, swap, chores, has to)',function(t){return /\b(own|lucky|only|swaps?|chores?|has to|have to|care for each other)\b/i.test(t)}]
+];
+var STARTERS=['My name is …','I have …','My … is … years old.','He / She is my good friend.','He / She helps me with …','He / She is very good at …','We often … together.','He / She likes to …','His / Her role in the family is to …'];
+function writeText(root){
+ var card=mk(root,'card','<h2>Exercise 8: write about a family member</h2><p class="note">Read about Allan’s brothers. Tap an underlined word for its translation.</p><div class="textpanel">'+ALLAN.map(function(p){return '<p style="margin-bottom:8px">'+tokenise(p)+'</p>'}).join('')+'</div><div class="gloss hidden" role="status" aria-live="polite"></div>'+
+  '<h3 style="margin-top:16px">How Allan builds his text</h3><div class="explain" style="margin-top:6px"><div class="eg-box"><b>1.</b> He introduces himself and the people. <i>My name is Allan. I have two brothers…</i></div><div class="eg-box"><b>2.</b> He gives the age and the relationship. <i>Peter is sixteen and he is my good friend.</i></div><div class="eg-box"><b>3.</b> He says what they do and are good at. <i>He helps with homework… He is very good at telling stories.</i></div><div class="eg-box"><b>4.</b> He ends with the role in the family. <i>His role in the family is to make us happy every day.</i></div></div>'+
+  '<h3 style="margin-top:16px">Your turn</h3><p class="note">Tap a starter to add it to your text, or write your own sentences.</p><div class="row-wrap" id="st" style="margin:8px 0"></div>'+
+  '<textarea id="wtext" aria-label="Your text about a family member" placeholder="My name is … I have …"></textarea><div class="row-wrap" style="justify-content:space-between;margin-top:6px"><span class="note" id="wc">0 words</span></div><ul class="checklist" id="cl"></ul>'+
+  '<div class="row-wrap" style="margin-top:12px"><button class="btn" type="button" id="sv">Save my result</button><button class="btn ghost" type="button" id="cp">Copy my text</button></div><div class="fb" role="status" aria-live="polite"></div>');
+ attachGloss(card);
+ var ta=card.querySelector('#wtext'),cl=card.querySelector('#cl'),wc=card.querySelector('#wc'),fb=card.querySelector('.fb');
+ if(DR.text)ta.value=DR.text;
+ var st=card.querySelector('#st');
+ STARTERS.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s;
+  b.onclick=function(){ta.value=(ta.value?ta.value.replace(/\s*$/,' '):'')+s+' ';ta.focus();upd()};st.appendChild(b)});
+ function stats(){var t=ta.value,n=t.trim()?t.trim().split(/\s+/).length:0,p=0;CH.forEach(function(c){if(c[1](t,n))p++});return {t:t,n:n,p:p}}
+ function upd(){
+  var s=stats();setDraft('text',s.t);wc.textContent=s.n+(s.n===1?' word':' words');
+  cl.innerHTML=CH.map(function(c){return '<li class="'+(c[1](s.t,s.n)?'ok':'')+'"><span class="dot"></span>'+c[0]+'</li>'}).join('');
+ }
+ ta.oninput=upd;upd();
+ card.querySelector('#sv').onclick=function(){
+  var s=stats();
+  if(s.n<10){fb.innerHTML='<span class="no">Write at least 10 words first.</span>';return}
+  var pts=s.p*5,rec=S.q.wtext;if(!rec||pts>=rec.pts){S.q.wtext={pts:pts,c:s.p,t:6};save()}
+  fb.innerHTML='<div class="result">'+starsSVG(rate(s.p,6))+'<div class="big">'+s.p+' of 6 checks done (+'+pts+' XP)</div><p class="note">'+(s.p<6?'Read the checklist and add what is missing, then save again.':'Excellent text!')+'</p></div>';
+  refreshHud();
+ };
+ card.querySelector('#cp').onclick=function(){copyText(ta.value,this,fb)};
+}
+
+/* ---------- STAGES ---------- */
+var STAGES=[
+ {title:'Meet the Family',sub:'Read the joke, then ask and answer about your own family.',ref:'Page 18 · Icebreaker, Ex. 1–3',tint:'green',ids:['joke'],
+  build:function(r){
+   readBlock(r,'Icebreaker: read the joke',JOKE,'Read the joke. Why is it funny? Tap an underlined word to see it in Romanian and Russian.');
+   quiz(r,'joke','Why is it funny?',Q_JOKE);
+   speakCard(r);spiderCard(r);
+  }},
+ {title:'New Words',sub:'See every new word with pronunciation, Romanian and Russian. Then match and translate.',ref:'Page 18 · “New” box and phrases',tint:'blue',ids:['match','words'],
+  build:function(r){
+   vocabBlock(r);matchGame(r);
+   quiz(r,'words','Translate the word',wordsQuiz,'Choose the right translation or the right English word.');
+  }},
+ {title:'Read and Understand',sub:'The whole dialogue is here. Read it, listen to it, then check what you understood.',ref:'Pages 18–19 · Ex. 4–5',tint:'pink',ids:['dis','who'],
+  build:function(r){
+   readBlock(r,'Leo’s family: the dialogue',DIALOGUE,'Read the dialogue. Tap an underlined word for its translation. The darker words are the new words of the lesson.');
+   quiz(r,'dis','Exercise 5: disagree',Q_DISAGREE,'Read the dialogue again. Choose the best way to disagree.');
+   quiz(r,'who','Who is it?',Q_WHO,'Choose the person.');
+   likeCard(r);
+  }},
+ {title:'Words and Sounds',sub:'Fill the gaps with the new words, then train the endings -er and -y.',ref:'Page 19 · Ex. 6 · Pronunciation box',tint:'green',ids:['ex6','sound'],
+  build:function(r){
+   quiz(r,'ex6','Exercise 6: choose the right word',Q_EX6,'Word bank: own, helpful, swap, lucky, hopeless, only.');
+   soundCard(r);
+   quiz(r,'sound','Which sound?',Q_SOUND,'Say the word aloud, then choose the final sound.');
+  }},
+ {title:'Grammar Lab 1: -ful and -less',sub:'Learn how to build adjectives, then complete Exercise 7.',ref:'Page 19 · Grammar, Ex. 7',tint:'blue',ids:['fl1','fl2'],
+  build:function(r){
+   flCard(r);
+   quiz(r,'fl1','Build the word',Q_FL1,'Add -ful or -less and type the new word.');
+   quiz(r,'fl2','Exercise 7: complete the sentences',Q_FL2,'Choose a word from the Remember box.');
+  }},
+ {title:'Grammar Lab 2: have to',sub:'Talk about chores and duties, like Leo does.',ref:'Pages 18–19 · chores in the dialogue',tint:'pink',ids:['ht'],
+  build:function(r){htCard(r);quiz(r,'ht','Practise have to',Q_HT,'Choose the correct form.')}},
+ {title:'Grammar Lab 3: have got',sub:'Talk about your family with the question “How many … have you got?”',ref:'Page 18 · Ex. 1 questions',tint:'green',ids:['hg'],
+  build:function(r){hgCard(r);quiz(r,'hg','Practise have got',Q_HG,'Choose the correct form.')}},
+ {title:'Write About Your Family',sub:'Write six sentences with the new words, then a short text about someone in your family.',ref:'Page 19 · Ex. 6 and Writing, Ex. 8',tint:'pink',ids:['wsent','wtext'],
+  build:function(r){writeSentences(r);writeText(r)}}
+];
+var cur=0;
+function isDone(st){return st.ids.every(function(id){return S.q[id]})}
+function stageStats(st){var c=0,t=0;st.ids.forEach(function(id){if(S.q[id]){c+=S.q[id].c;t+=S.q[id].t}});return {c:c,t:t}}
+function stageStars(st){var s=stageStats(st);return isDone(st)?rate(s.c,s.t):0}
+function xpHTML(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="star-on" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg><span>'+totalXP()+' XP</span>'}
+
+function refreshHud(){
+ var x=document.getElementById('hudxp');if(x)x.innerHTML=xpHTML();
+ var s=document.getElementById('status'),a=document.getElementById('after');
+ if(cur&&s){
+  var st=STAGES[cur-1],n=st.ids.filter(function(id){return S.q[id]}).length;
+  if(isDone(st)){s.className='status ok';s.innerHTML='Stage complete '+starsSVG(stageStars(st))}
+  else{s.className='status';s.textContent='Practice finished: '+n+' of '+st.ids.length}
+  if(a){a.innerHTML=isDone(st)?'<div class="card result"><div class="big">Well done!</div>'+(cur<STAGES.length?'<a class="btn" href="#stage-'+(cur+1)+'" style="text-decoration:none">Next stage</a>':'<a class="btn" href="#" style="text-decoration:none">See all stages</a>')+'</div>':''}
+ }
+}
+
+function home(){
+ var done=STAGES.filter(isDone).length;
+ var li=STAGES.map(function(st,i){
+  var d=isDone(st);
+  return '<li><span class="node'+(d?' done':'')+'">'+(i+1)+'</span><a class="stagebtn" href="#stage-'+(i+1)+'"><div class="row"><div><h3>'+st.title+'</h3><div class="sub">'+st.sub+'</div></div>'+(d?starsSVG(stageStars(st)):'')+'</div><span class="ref t-'+st.tint+'">'+st.ref+'</span></a></li>';
+ }).join('');
+ app.innerHTML='<div class="top"><span class="kicker">Lesson One · Unit 2 · pages 18–19</span><span class="xp" id="hudxp">'+xpHTML()+'</span></div><h1>A United Family Quest</h1><div class="tabs"><i></i><i></i><i></i></div>'+
+  '<p class="lead">Learn the new words, read the dialogue, practise the grammar and write about your own family. A right answer on the first try gives 10 XP, on the second try 5 XP. You can open any stage and play it again.</p>'+
+  '<ol class="path">'+li+'</ol>'+
+  '<div class="card"><h3>'+(done===STAGES.length?'Lesson complete!':done+' of '+STAGES.length+' stages complete')+'</h3><p class="note" style="margin:4px 0 10px">Type your name and copy your results to send them to your teacher.</p><div class="row-wrap"><input id="nm" type="text" autocomplete="name" aria-label="Your name" placeholder="Your name" style="font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0;flex:1 1 180px"><button class="btn" type="button" id="cr">Copy my results</button><button class="btn ghost" type="button" id="rs">Start over</button></div><div id="rh"></div></div>';
+ var nm=document.getElementById('nm');nm.value=S.name||'';nm.oninput=function(){S.name=nm.value;save()};
+ var rh=document.getElementById('rh');
+ document.getElementById('cr').onclick=function(){
+  var t='A United Family Quest – '+(S.name||'(no name)')+'\nTotal: '+totalXP()+' XP, '+done+' of '+STAGES.length+' stages complete\n'+STAGES.map(function(st,i){var s=stageStats(st);return (i+1)+'. '+st.title+': '+(isDone(st)?stageStars(st)+'/3 stars ('+s.c+'/'+s.t+' first try)':'not finished')}).join('\n');
+  copyText(t,this,rh);
+ };
+ var rs=document.getElementById('rs'),armed=false;
+ rs.onclick=function(){
+  if(!armed){armed=true;rs.textContent='Press again to erase all progress';setTimeout(function(){armed=false;rs.textContent='Start over'},4000);return}
+  S={name:S.name,q:{}};DR={};save();try{localStorage.removeItem('uf-draft')}catch(e){}home();
+ };
+}
+function stageScreen(n){
+ var st=STAGES[n-1];
+ app.innerHTML='<a class="back" href="#">← All stages</a><div class="top"><span class="kicker">'+st.ref+'</span><span class="xp" id="hudxp">'+xpHTML()+'</span></div><div class="stagehead"><span class="tag" style="background:var(--'+st.tint+')"></span><h1>'+st.title+'</h1></div><p class="lead" style="margin-bottom:0">'+st.sub+'</p><div class="status" id="status"></div><div id="blocks"></div><div id="after"></div>';
+ st.build(document.getElementById('blocks'));
+ refreshHud();
+}
+function route(){
+ var m=/^#stage-(\d+)$/.exec(location.hash),n=m?+m[1]:0;
+ if(n>=1&&n<=STAGES.length){cur=n;stageScreen(n)}else{cur=0;home()}
+ window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-say]');if(b)say(b.dataset.say)});
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
+
+</body></html>
