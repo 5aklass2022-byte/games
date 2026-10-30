@@ -48,8 +48,8 @@ jobs:
 
           def lesson_order(path):
               name = path.stem.replace('_', ' ')
-              unit = re.search(r'\bunit\s*[-.:, ]*\s*(\d+)', name, re.I)
-              lesson = re.search(r'\blesson\s*[-.:, ]*\s*(\d+)', name, re.I)
+              unit = re.search(r'unit\s*[-.:, ]*\s*(\d+)', name, re.I)
+              lesson = re.search(r'lesson\s*[-.:, ]*\s*(\d+)', name, re.I)
               return (
                   int(unit.group(1)) if unit else float('inf'),
                   int(lesson.group(1)) if lesson else float('inf'),
