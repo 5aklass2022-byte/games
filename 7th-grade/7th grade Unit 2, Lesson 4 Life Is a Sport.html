@@ -1,0 +1,927 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Life Is a Sport</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. A home path of eight stages; each stage opens as a screen with learn blocks first, then scored practice cards. Colour tabs echo the textbook (green, blue, pink). */
+:root{
+  --bg:#f1f7f6; --surface:#ffffff; --ink:#12303a; --muted:#4a666e; --line:#cfe0de;
+  --accent:#0e7c86; --accent-ink:#ffffff; --accent-soft:#d8eef0;
+  --green:#cfeedd; --blue:#d3e9f7; --pink:#fbd9d9;
+  --sun:#e9a23b; --good:#1d8a50; --good-soft:#d9f2e3; --bad:#c0392f; --bad-soft:#fbe0dd;
+  --display:'Comfortaa','Nunito',system-ui,sans-serif; --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1b20; --surface:#16282f; --ink:#e5f0ef; --muted:#9fb8bc; --line:#2a444c;
+    --accent:#52c4cf; --accent-ink:#06282d; --accent-soft:#17383e;
+    --green:#1c3d30; --blue:#1b3a4d; --pink:#442a2e;
+    --sun:#f3b55a; --good:#58c68a; --good-soft:#173a2a; --bad:#f08a80; --bad-soft:#442523;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1b20; --surface:#16282f; --ink:#e5f0ef; --muted:#9fb8bc; --line:#2a444c;
+  --accent:#52c4cf; --accent-ink:#06282d; --accent-soft:#17383e;
+  --green:#1c3d30; --blue:#1b3a4d; --pink:#442a2e;
+  --sun:#f3b55a; --good:#58c68a; --good-soft:#173a2a; --bad:#f08a80; --bad-soft:#442523;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);line-height:1.25;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.6rem,5vw,2.3rem);font-weight:700}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.hidden{display:none!important}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.tabs{display:flex;gap:6px;margin:10px 0 14px}
+.tabs i{display:block;height:10px;border-radius:3px}
+.tabs i:nth-child(1){width:64px;background:var(--green)}
+.tabs i:nth-child(2){width:34px;background:var(--blue)}
+.tabs i:nth-child(3){width:34px;background:var(--pink)}
+.kicker{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.xp{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-variant-numeric:tabular-nums}
+.xp svg{width:18px;height:18px}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:6px 0;color:var(--accent);font-weight:800;text-decoration:none}
+
+/* home path */
+.lead{color:var(--muted);max-width:60ch;margin:6px 0 18px}
+.path{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:12px}
+.path::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;width:4px;border-radius:2px;background:var(--line)}
+.path li{display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px;align-items:start;position:relative}
+.node{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;background:var(--surface);border:3px solid var(--line);color:var(--muted);z-index:1}
+.node.done{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stagebtn{text-decoration:none;color:inherit;display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.stagebtn:hover{border-color:var(--accent)}
+.stagebtn .row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.stagebtn h3{margin-bottom:2px}
+.stagebtn .sub{color:var(--muted);font-size:.93rem}
+.stagebtn .ref{display:inline-block;margin-top:6px;font-size:.78rem;font-weight:800;padding:2px 9px;border-radius:6px;color:var(--ink)}
+.t-green{background:var(--green)} .t-blue{background:var(--blue)} .t-pink{background:var(--pink)}
+.stars{display:flex;gap:2px;flex:none}
+.stars svg{width:20px;height:20px}
+.star-on{fill:var(--sun)} .star-off{fill:none;stroke:var(--line);stroke-width:1.6}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;min-width:0}
+.card > h2,.card > h3{margin-bottom:8px}
+.note{color:var(--muted);font-size:.93rem}
+.stagehead{display:flex;gap:12px;align-items:center;margin:4px 0 4px}
+.stagehead .tag{flex:none;width:12px;align-self:stretch;border-radius:6px}
+.status{margin-top:10px;font-weight:800;color:var(--muted)}
+.status.ok{color:var(--good)}
+
+/* buttons */
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font-weight:800}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.small{padding:5px 11px;font-size:.88rem}
+.btn[disabled]{opacity:.5;cursor:default}
+.chip{background:var(--accent-soft);color:var(--ink);border:1px solid transparent;border-radius:999px;padding:6px 13px;font-weight:700}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);color:var(--accent-ink)}
+.row-wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.listen{background:none;border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:.8rem;font-weight:800;color:var(--accent)}
+
+/* vocab cards */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:10px}
+.vc{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg);display:grid;gap:4px;align-content:start;min-width:0}
+.vc .en{font-family:var(--display);font-weight:700;font-size:1.1rem}
+.vc .ipa{color:var(--muted);font-size:.9rem}
+.tr{display:flex;gap:8px;align-items:baseline}
+.lang{flex:none;font-size:.68rem;font-weight:800;letter-spacing:.06em;padding:1px 6px;border-radius:5px;background:var(--blue);color:var(--ink)}
+.lang.ru{background:var(--pink)}
+.vc .eg{font-size:.9rem;color:var(--muted);font-style:italic}
+.vc.cover .tr span:last-child{filter:blur(7px);cursor:pointer;user-select:none}
+.vc.cover.shown .tr span:last-child{filter:none}
+.grouphead{margin-top:18px;display:flex;align-items:center;gap:8px}
+.grouphead i{width:26px;height:8px;border-radius:3px;display:block}
+
+/* reading */
+.dialogue{display:grid;gap:10px;margin-top:8px}
+.line{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:start}
+.who{font-weight:800;font-size:.92rem;padding:2px 8px;border-radius:6px;text-align:center}
+.who.leo{background:var(--blue)} .who.helen{background:var(--pink)} .who.tim{background:var(--green)} .who.alex{background:var(--blue)}
+.say{font-size:1.04rem}
+.w{border-bottom:2px dotted var(--accent);cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;padding:0;font:inherit;color:inherit}
+.w.new{background:var(--accent-soft);border-bottom-style:solid;border-radius:3px}
+.gloss{position:sticky;bottom:10px;margin-top:12px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:grid;gap:2px;z-index:3}
+.gloss b{font-family:var(--display)}
+.textpanel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px}
+.panelfig{width:100%;display:block}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.count{font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--line);border-radius:5px;margin:8px 0 12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .3s}
+.intro{color:var(--muted);margin-bottom:8px}
+.prompt{font-size:1.1rem;font-weight:600;margin-bottom:12px;overflow-wrap:anywhere}
+.answers{display:grid;gap:8px}
+.answers.bank{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.opt{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:10px 13px;font-weight:600}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt.good{background:var(--good-soft);border-color:var(--good)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{cursor:default}
+.fill{color:var(--good);border-bottom:3px solid var(--good)}
+.blank{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--muted);text-align:center}
+.typebox{display:flex;gap:8px;flex-wrap:wrap}
+.typebox input,.sentrow input,textarea{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+.typebox input{flex:1 1 180px}
+.typebox input:focus,.sentrow input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.fb{min-height:1.5em;margin-top:12px}
+.fb .ok{color:var(--good);font-weight:800}
+.fb .no{color:var(--bad);font-weight:800}
+.nav{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.result{text-align:center;display:grid;gap:10px;justify-items:center;padding:8px 0}
+.result .stars svg{width:38px;height:38px}
+.big{font-family:var(--display);font-size:1.5rem;font-weight:700}
+
+/* grammar */
+.explain{display:grid;gap:8px}
+.lng{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft)}
+.scroll{overflow-x:auto;max-width:100%}
+.eg-box{background:var(--accent-soft);border-radius:10px;padding:8px 12px;margin:2px 0}
+
+/* match */
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:10px}
+.matchgrid button{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 11px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.matchgrid button.sel{border-color:var(--accent);background:var(--accent-soft)}
+.matchgrid button.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+
+/* spinner + speaking */
+.spin{font-size:1.15rem;font-weight:700;background:var(--bg);border:2px dashed var(--line);border-radius:12px;padding:14px;margin:10px 0;min-height:4.2em}
+
+/* writing */
+.sentrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
+.sentrow label{font-weight:800}
+.sentrow .st{grid-column:2;font-size:.9rem}
+.sentrow input{width:100%}
+textarea{width:100%;min-height:190px;resize:vertical;line-height:1.5}
+.checklist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:4px}
+.checklist li{display:flex;gap:8px;align-items:center}
+.checklist .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none}
+.checklist li.ok .dot{background:var(--good);border-color:var(--good)}
+.checklist li.ok{color:var(--good);font-weight:700}
+
+@media (max-width:520px){
+  .line{grid-template-columns:minmax(0,1fr)}
+  .line .listen{justify-self:start}
+  .who{justify-self:start}
+  .sentrow{grid-template-columns:minmax(0,1fr)}
+  .sentrow .st{grid-column:1}
+  .matchgrid{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.bar i{transition:none}}
+.who.andi{background:var(--blue)} .who.nina{background:var(--pink)}
+.bigpic{display:block;font-size:3.4rem;line-height:1.15;margin-bottom:6px}
+.vc .vpic{font-size:2.4rem;line-height:1.1}
+.mine{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.mine label{font-weight:800;font-size:1.05rem}
+.mine input{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
+.mine input:focus{border-color:var(--accent);outline:none}
+.mine .st{flex:1 1 100%}
+.answers.wordbank{grid-template-columns:repeat(auto-fit,minmax(80px,max-content));gap:10px}
+.built{min-height:3.2rem;border:2px dashed var(--line);border-radius:12px;padding:10px 12px;margin:8px 0 12px;font-size:1.1rem;font-weight:700;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.built span{background:var(--accent-soft);border-radius:8px;padding:2px 9px}
+.built .note{background:none;padding:0;font-weight:400;font-size:.95rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+</style>
+<div class="wrap" id="app"></div>
+<script>
+(function(){
+'use strict';
+
+/* ---------- VOCABULARY: IPA + Romanian + Russian ---------- */
+var VOCAB=[
+ {g:'Heroes and sport',tint:'green',items:[
+  {en:'hero',ipa:'/ˈhɪərəʊ/',ro:'erou, eroină',ru:'герой, героиня',ex:'A hero is a person whom you admire very much.'},
+  {en:'to admire',ipa:'/ədˈmaɪə/',ro:'a admira',ru:'восхищаться',ex:'I admire her very much.'},
+  {en:'to impress',ipa:'/ɪmˈpres/',ro:'a impresiona',ru:'производить впечатление',ex:'She impressed everybody.'},
+  {en:'to inspire',ipa:'/ɪnˈspaɪə/',ro:'a inspira',ru:'вдохновлять',ex:'She has always inspired me.'},
+  {en:'gymnast',ipa:'/ˈdʒɪmnæst/',ro:'gimnast(ă)',ru:'гимнаст(ка)',ex:'She is an artistic gymnast.'},
+  {en:'medal',ipa:'/ˈmedl/',ro:'medalie',ru:'медаль',ex:'She has won the most World medals.'},
+  {en:'gold',ipa:'/ɡəʊld/',ro:'aur; de aur',ru:'золото; золотой',ex:'She won three gold medals.'},
+  {en:'bronze',ipa:'/brɒnz/',ro:'bronz; de bronz',ru:'бронза; бронзовый',ex:'She won one bronze medal.'},
+  {en:'the Olympic Games',ipa:'/ði əˈlɪmpɪk ɡeɪmz/',ro:'Jocurile Olimpice',ru:'Олимпийские игры',ex:'She said it at the Rio 2016 Olympic Games.'},
+  {en:'competition',ipa:'/ˌkɒmpəˈtɪʃn/',ro:'competiție, concurs',ru:'соревнование',ex:'Has she participated in the competition?'},
+  {en:'to take part in',ipa:'/teɪk pɑːt ɪn/',ro:'a lua parte la',ru:'участвовать в',ex:'She took part in the show.'},
+  {en:'performance',ipa:'/pəˈfɔːməns/',ro:'evoluție, performanță',ru:'выступление',ex:'Her performance was amazing.'},
+  {en:'goal',ipa:'/ɡəʊl/',ro:'gol; scop',ru:'гол; цель',ex:'Megan Rapinoe has just scored a goal!'},
+  {en:'to score',ipa:'/skɔː/',ro:'a marca (un gol)',ru:'забивать (гол)',ex:'Messi scored two goals.'},
+  {en:'to win',ipa:'/wɪn/',ro:'a câștiga',ru:'выигрывать, побеждать',ex:'Who has won the game?'},
+  {en:'to lose',ipa:'/luːz/',ro:'a pierde',ru:'проигрывать, терять',ex:'They have lost the game.'},
+  {en:'team',ipa:'/tiːm/',ro:'echipă',ru:'команда',ex:'She is the captain of the team.'},
+  {en:'captain',ipa:'/ˈkæptɪn/',ro:'căpitan',ru:'капитан',ex:'Dan is the captain of the basketball team.'},
+  {en:'athlete',ipa:'/ˈæθliːt/',ro:'atlet, sportiv',ru:'спортсмен(ка)',ex:'She can become an amazing athlete.'}
+ ]},
+ {g:'Qualities and goals',tint:'blue',items:[
+  {en:'courage',ipa:'/ˈkʌrɪdʒ/',ro:'curaj',ru:'смелость, мужество',ex:'I like her determination and courage.'},
+  {en:'determination',ipa:'/dɪˌtɜːmɪˈneɪʃn/',ro:'hotărâre, perseverență',ru:'решимость, целеустремлённость',ex:'She has a lot of determination.'},
+  {en:'to give up',ipa:'/ɡɪv ʌp/',ro:'a renunța',ru:'сдаваться, бросать',ex:'She never gives up.'},
+  {en:'to realize a goal',ipa:'/ˈrɪəlaɪz ə ɡəʊl/',ro:'a-și îndeplini un scop',ru:'достигать цели',ex:'I can realize my goals if I work hard.'},
+  {en:'miracle',ipa:'/ˈmɪrəkl/',ro:'minune',ru:'чудо',ex:'She can work miracles with the ball.'},
+  {en:'quality',ipa:'/ˈkwɒləti/',ro:'calitate, trăsătură',ru:'качество, черта характера',ex:'Which qualities do you admire?'},
+  {en:'example',ipa:'/ɪɡˈzɑːmpl/',ro:'exemplu',ru:'пример',ex:'She is the perfect example of a winner.'},
+  {en:'individually',ipa:'/ˌɪndɪˈvɪdʒuəli/',ro:'individual, personal',ru:'индивидуально, лично',ex:'She won three gold medals individually.'},
+  {en:'jump',ipa:'/dʒʌmp/',ro:'săritură',ru:'прыжок',ex:'The jumps she does are fantastic.'}
+ ]},
+ {g:'Very good: synonyms (Exercise 4)',tint:'pink',items:[
+  {en:'amazing',ipa:'/əˈmeɪzɪŋ/',ro:'uimitor',ru:'потрясающий, удивительный',ex:'Her performance was amazing.'},
+  {en:'brilliant',ipa:'/ˈbrɪliənt/',ro:'genial, strălucit',ru:'блестящий, великолепный',ex:'She was simply brilliant.'},
+  {en:'fantastic',ipa:'/fænˈtæstɪk/',ro:'fantastic, minunat',ru:'фантастический, замечательный',ex:'The jumps she does are fantastic.'},
+  {en:'perfect',ipa:'/ˈpɜːfɪkt/',ro:'perfect',ru:'идеальный',ex:'She is the perfect example of a winner.'}
+ ]},
+ {g:'Doers of the action: verb + -er (Exercise 5)',tint:'green',items:[
+  {en:'winner',ipa:'/ˈwɪnə/',ro:'câștigător',ru:'победитель',ex:'These are the words of a winner.'},
+  {en:'writer',ipa:'/ˈraɪtə/',ro:'scriitor',ru:'писатель',ex:'A writer writes books.'},
+  {en:'teacher',ipa:'/ˈtiːtʃə/',ro:'profesor, învățător',ru:'учитель',ex:'A teacher teaches children.'},
+  {en:'dancer',ipa:'/ˈdɑːnsə/',ro:'dansator',ru:'танцор(ка)',ex:'She is a beautiful dancer.'},
+  {en:'skier',ipa:'/ˈskiːə/',ro:'schior',ru:'лыжник(ца)',ex:'A skier skis in the mountains.'},
+  {en:'player',ipa:'/ˈpleɪə/',ro:'jucător',ru:'игрок',ex:'Serena Williams is a brilliant tennis player.'},
+  {en:'boxer',ipa:'/ˈbɒksə/',ro:'boxer',ru:'боксёр',ex:'A boxer boxes in a ring.'},
+  {en:'swimmer',ipa:'/ˈswɪmə/',ro:'înotător',ru:'пловец',ex:'A swimmer swims very fast.'},
+  {en:'skater',ipa:'/ˈskeɪtə/',ro:'patinator',ru:'фигурист, конькобежец',ex:'A skater skates on ice.'},
+  {en:'runner',ipa:'/ˈrʌnə/',ro:'alergător',ru:'бегун',ex:'A runner runs very fast.'},
+  {en:'defender',ipa:'/dɪˈfendə/',ro:'apărător',ru:'защитник',ex:'A defender defends the goal.'}
+ ]},
+ {g:'Sound /ŋk/ (Exercise 14)',tint:'blue',items:[
+  {en:'bank',ipa:'/bæŋk/',ro:'bancă',ru:'банк',ex:'My mother works in a bank.'},
+  {en:'pink',ipa:'/pɪŋk/',ro:'roz',ru:'розовый',ex:'She has a pink bag.'},
+  {en:'thank',ipa:'/θæŋk/',ro:'a mulțumi',ru:'благодарить',ex:'I thank you very much.'},
+  {en:'ink',ipa:'/ɪŋk/',ro:'cerneală',ru:'чернила',ex:'This pen has blue ink.'},
+  {en:'tank',ipa:'/tæŋk/',ro:'rezervor; tanc',ru:'бак; танк',ex:'The tank is full of water.'},
+  {en:'sink',ipa:'/sɪŋk/',ro:'chiuvetă; a se scufunda',ru:'раковина; тонуть',ex:'The dishes are in the sink.'},
+  {en:'prank',ipa:'/præŋk/',ro:'farsă',ru:'розыгрыш',ex:'It was only a prank.'},
+  {en:'frank',ipa:'/fræŋk/',ro:'sincer',ru:'откровенный',ex:'She is frank with her friends.'},
+  {en:'drink',ipa:'/drɪŋk/',ro:'a bea; băutură',ru:'пить; напиток',ex:'I drink water after sport.'},
+  {en:'think',ipa:'/θɪŋk/',ro:'a gândi',ru:'думать',ex:'What do you think?'}
+ ]}
+];
+var CORE=[];
+VOCAB.slice(0,3).forEach(function(g){g.items.forEach(function(w){CORE.push(w)})});
+
+/* words that can be tapped in the text: [Romanian, Russian] */
+var GL={
+ 'hero':['erou','герой'],'artistic':['artistic','художественный'],'gymnast':['gimnast(ă)','гимнастка'],
+ 'won':['a câștigat','выиграла'],'medals':['medalii','медали'],'medal':['medalie','медаль'],'world':['mondial','мировой'],
+ 'gold':['aur, de aur','золото, золотой'],'bronze':['bronz','бронза'],'performance':['evoluție','выступление'],
+ 'summer':['de vară','летние'],'olympics':['Jocurile Olimpice','Олимпиада'],'olympic':['olimpic','олимпийский'],
+ 'amazing':['uimitor','потрясающий'],'simply':['pur și simplu','просто'],'brilliant':['genial','блестящий'],
+ 'individually':['individual','индивидуально'],'team':['echipă','команда'],'fly':['a zbura','летать'],
+ 'jumps':['sărituri','прыжки'],'fantastic':['fantastic','фантастический'],'beautifully':['frumos','красиво'],
+ 'dance':['a dansa','танцевать'],'show':['spectacol, emisiune','шоу'],'impressed':['a impresionat','произвела впечатление'],
+ 'everybody':['toată lumea','все'],'perfect':['perfect','идеальный'],'example':['exemplu','пример'],
+ 'become':['a deveni','стать'],'work':['a munci','работать'],'hard':['din greu, cu sârguință','упорно, усердно'],
+ 'realize':['a îndeplini','достигать, осуществлять'],'goals':['scopuri','цели'],'inspired':['a inspirat','вдохновляла'],
+ 'determination':['hotărâre','решимость'],'courage':['curaj','смелость'],'gives':['renunță (gives up)','сдаётся (gives up)'],
+ 'winner':['câștigător','победитель'],'words':['cuvinte','слова'],'next':['următorul','следующий'],'first':['primul','первый'],
+ 'person':['persoană','человек'],'never':['niciodată','никогда'],'always':['mereu','всегда'],'love':['a iubi','любить']
+};
+var NEWW={hero:1,gymnast:1,medals:1,medal:1,gold:1,bronze:1,performance:1,olympics:1,olympic:1,amazing:1,brilliant:1,individually:1,team:1,jumps:1,fantastic:1,impressed:1,perfect:1,example:1,realize:1,goals:1,inspired:1,determination:1,courage:1,winner:1};
+
+var SIMONE=[
+ 'My hero is Simone Biles. I simply love her. She is an artistic gymnast. She has won the most World medals (25) and most World gold medals (19).',
+ 'Her performance at the 2016 Summer Olympics was amazing. She was simply brilliant. She won three gold and one bronze medals individually, and one gold medal as part of the United States team.',
+ 'When I look at her on TV, I think that she can fly. The jumps she does are fantastic. She can also dance beautifully. She took part in the show Dancing with the Stars and she impressed everybody.',
+ 'She is the perfect example of what a person can become if they work hard to realize their goals. She has always inspired me. I like her determination and courage. She never gives up. At the Rio 2016 Olympic Games she said: ‘I’m not the next Usain Bolt or Michael Phelps - I’m the first Simone Biles’. These are the words of a winner.'
+];
+var DIALOG=[
+ ['Andi','Have you seen the football match?'],
+ ['Nina','Yes, I have. What a show!'],
+ ['Andi','It was amazing! The team played very well.'],
+ ['Nina','And Messi was brilliant! He scored two beautiful goals.'],
+ ['Andi','Well, I didn’t know you are fond of football.'],
+ ['Nina','Actually, I am. But I have never played football. Girls do not play football here in Moldova. They say it’s a sport for boys.'],
+ ['Andi','You know what, we can play football together. I can show you some moves. What do you say?'],
+ ['Nina','Really? I’d love to.']
+];
+var CLOZE_TEXT='I have just watched the game. What a game! Megan Rapinoe is the best football player. She can work miracles with the ball. Have you seen what goal she has scored? What I like about her is that she never gives up. Probably that is why she is the captain of the United States women’s national soccer team. She’s my hero! She inspires me. I know I can realize my goals if I work hard. What I need is courage and determination.';
+var PEOPLE=[
+ {n:'Serena Williams',pic:'🎾',noun:'tennis player',verb:'play tennis',he:'She'},
+ {n:'Michael Phelps',pic:'🏊',noun:'swimmer',verb:'swim',he:'He'},
+ {n:'Usain Bolt',pic:'🏃',noun:'runner',verb:'run',he:'He'},
+ {n:'Megan Rapinoe',pic:'⚽',noun:'football player',verb:'play football',he:'She'},
+ {n:'Evgeni Plushenko',pic:'⛸️',noun:'skater',verb:'skate',he:'He'},
+ {n:'Mikaela Shiffrin',pic:'⛷️',noun:'skier',verb:'ski',he:'She'}
+];
+
+/* ---------- QUIZ ITEMS ---------- */
+function wordsQuiz(poolArg,n){
+ return function(){
+  var pool=poolArg||CORE,items=[],dirs=['en2ro','en2ru','ro2en','ru2en'],name={en:'English',ro:'Romanian',ru:'Russian'};
+  shuffle(pool).slice(0,n||8).forEach(function(w,i){
+   var d=dirs[i%4],from=d.slice(0,2),to=d.slice(3);
+   var others=shuffle(pool.filter(function(x){return x!==w})).slice(0,2);
+   var opts=[w[to]].concat(others.map(function(x){return x[to]}));
+   items.push({q:(from==='en'?'Choose the '+name[to]+' translation of <b>'+w.en+'</b>.':'Which English word means <b>'+w[from]+'</b>?'),opts:opts,a:w[to],say:from==='en'?w.en:null,ex:w.en+' '+w.ipa+' = '+w.ro+' = '+w.ru});
+  });
+  return shuffle(items);
+ };
+}
+var Q_SIMONE=[
+ {q:'What is Simone Biles?',opts:['An artistic gymnast.','A tennis player.','A swimmer.'],a:'An artistic gymnast.',ex:'“She is an artistic gymnast.”'},
+ {q:'How many World medals has she won?',opts:['19','25','3'],a:'25',fixed:1,ex:'“She has won the most World medals (25) and most World gold medals (19).”'},
+ {q:'How many World gold medals has she won?',opts:['19','25','5'],a:'19',fixed:1,ex:'She has 25 World medals and 19 World gold medals.'},
+ {q:'At the 2016 Olympics she won three gold and one bronze medal individually. What else did she win?',opts:['One gold medal with the United States team.','Two silver medals.','One medal in a TV show.'],a:'One gold medal with the United States team.',ex:'“…and one gold medal as part of the United States team.”'},
+ {q:'What does Ana think when she looks at Simone on TV?',opts:['That she can fly.','That she is tired.','That she is shy.'],a:'That she can fly.',ex:'“When I look at her on TV, I think that she can fly.”'},
+ {q:'Which show did Simone take part in?',opts:['Dancing with the Stars','The Olympic Show','Rio Live'],a:'Dancing with the Stars',ex:'“She took part in the show Dancing with the Stars and she impressed everybody.”'},
+ {q:'Exercise 3.1: Which of Simone’s qualities does Ana admire?',opts:['Her determination and courage.','Her money and fame.','Her height and age.'],a:'Her determination and courage.',ex:'“I like her determination and courage.”'},
+ {q:'Exercise 3.2: What helped Simone get such good results?',opts:['She works hard and never gives up.','She is very lucky.','She watches TV a lot.'],a:'She works hard and never gives up.',ex:'She is an example of what a person can become “if they work hard to realize their goals”. “She never gives up.”'},
+ {q:'What did Simone say at the Rio 2016 Olympic Games?',opts:['“I’m not the next Usain Bolt or Michael Phelps – I’m the first Simone Biles.”','“I’m the next Usain Bolt.”','“I never want to win.”'],a:'“I’m not the next Usain Bolt or Michael Phelps – I’m the first Simone Biles.”',ex:'These are the words of a winner.'}
+];
+var Q_SYN1=[
+ {q:'Find a synonym for <b>very good</b> in paragraph 2. It starts with “<b>a</b>”: ____',type:'type',acc:['amazing'],a:'amazing',hint:'Her performance at the 2016 Summer Olympics was a… (7 letters)',ex:'amazing = very good, uimitor, потрясающий'},
+ {q:'Find another synonym in paragraph 2. It starts with “<b>b</b>”: ____',type:'type',acc:['brilliant'],a:'brilliant',hint:'She was simply b… (9 letters)',ex:'brilliant = very good, genial, блестящий'},
+ {q:'Find a synonym in paragraph 3. It starts with “<b>f</b>”: ____',type:'type',acc:['fantastic'],a:'fantastic',hint:'The jumps she does are f… (9 letters)',ex:'fantastic = very good, fantastic, фантастический'},
+ {q:'Find a synonym in paragraph 4. It starts with “<b>p</b>”: ____',type:'type',acc:['perfect'],a:'perfect',hint:'She is the p… example. (7 letters)',ex:'perfect = very good, perfect, идеальный'}
+];
+var Q_SYN2=[
+ {q:'Her performance at the 2016 Olympics was ____.',opts:['amazing','boring','weak'],a:'amazing',fixed:1,blank:1,ex:'amazing = very good'},
+ {q:'She was simply ____.',opts:['ordinary','brilliant','poor'],a:'brilliant',fixed:1,blank:1,ex:'brilliant = very good'},
+ {q:'The jumps she does are ____.',opts:['fantastic','terrible','small'],a:'fantastic',fixed:1,blank:1,ex:'fantastic = very good'},
+ {q:'She is the ____ example of what a person can become.',opts:['careless','perfect','bad'],a:'perfect',fixed:1,blank:1,ex:'perfect = very good'},
+ {q:'Which word is NOT a synonym for <b>very good</b>?',opts:['amazing','brilliant','ordinary'],a:'ordinary',fixed:1,ex:'ordinary = obișnuit, обычный. It is not “very good”.'},
+ {q:'Which word is NOT a synonym for <b>very good</b>?',opts:['fantastic','terrible','perfect'],a:'terrible',fixed:1,ex:'terrible = groaznic, ужасный. It is the opposite.'}
+];
+var ERPAIRS=[['dance','dancer','dancers'],['ski','skier'],['play','player'],['box','boxer'],['swim','swimmer'],['skate','skater'],['run','runner'],['defend','defender']];
+var Q_ER=ERPAIRS.map(function(p){return {q:'<b>'+p[0]+'</b> + -er = ____',type:'type',acc:[p[1]],a:p[1],say:p[1],
+ ex:p[0]==='swim'||p[0]==='run'?p[0]+' ends with one vowel + one consonant: double the last letter → '+p[1]+'.':p[0]==='dance'||p[0]==='skate'?p[0]+' ends in -e: add only -r → '+p[1]+'.':p[0]+' + er = '+p[1]+'.'}});
+var Q_ER2=[
+ {q:'Which spelling is correct? (swim)',opts:['swimmer','swimer','swimmor'],a:'swimmer',fixed:1,ex:'swim → swimmer: double the m.'},
+ {q:'Which spelling is correct? (run)',opts:['runer','runner','runnor'],a:'runner',fixed:1,ex:'run → runner: double the n.'},
+ {q:'Which spelling is correct? (skate)',opts:['skater','skateer','skatter'],a:'skater',fixed:1,ex:'skate → skater: only add -r.'},
+ {q:'Which spelling is correct? (win)',opts:['winer','winner','winor'],a:'winner',fixed:1,ex:'win → winner: double the n.'},
+ {q:'Which spelling is correct? (write)',opts:['writer','writter','writeer'],a:'writer',fixed:1,ex:'write → writer: only add -r.'},
+ {q:'A person who plays football is a football ____.',opts:['player','playor','playing'],a:'player',fixed:1,ex:'play + er = player.'}
+];
+var Q_STARS=PEOPLE.map(function(p){
+ var all=['tennis player','swimmer','runner','football player','skater','skier'],others=all.filter(function(x){return x!==p.noun});
+ return {q:'<b>'+p.n+'</b> is a brilliant ____.',opts:[p.noun].concat(shuffle(others).slice(0,2)),a:p.noun,blank:1,pic:null,ex:p.n+' is a '+p.noun+'. '+p.he+' can '+p.verb+' very well.'};
+});
+var SCR_STARS=[
+ {s:'Serena Williams is a brilliant tennis player.',pic:'🎾'},
+ {s:'Michael Phelps is a brilliant swimmer.',pic:'🏊'},
+ {s:'Usain Bolt is a brilliant runner.',pic:'🏃'},
+ {s:'Megan Rapinoe is a brilliant football player.',pic:'⚽'},
+ {s:'Evgeni Plushenko is a brilliant skater.',pic:'⛸️'},
+ {s:'Mikaela Shiffrin is a brilliant skier.',pic:'⛷️'},
+ {s:'Michael Phelps can swim very well.',pic:'🏊'},
+ {s:'Mikaela Shiffrin can ski very well.',pic:'⛷️'}
+];
+var PPLIST=[['win','won'],['lose','lost'],['see','seen'],['do','done'],['score','scored'],['happen','happened'],['watch','watched'],['turn','turned'],['miss','missed'],['participate','participated']];
+var Q_PP=PPLIST.map(function(p){return {q:'Past participle of <b>'+p[0]+'</b>: ____',type:'type',acc:[p[1]],a:p[1],ex:p[0]+' → '+p[1]+(p[1]===p[0]+'ed'||p[1]===p[0]+'d'?' (regular verb: + -ed)':' (irregular verb: learn it by heart)')}});
+var Q_PP2=[
+ {q:'She ____ just scored a goal.',opts:['have','has','is'],a:'has',fixed:1,blank:1,ex:'He / she / it + <b>has</b> + V3.'},
+ {q:'They ____ lost the game.',opts:['have','has','are'],a:'have',fixed:1,blank:1,ex:'I / you / we / they + <b>have</b> + V3.'},
+ {q:'I ____ never played football.',opts:['have','has','am'],a:'have',fixed:1,blank:1,ex:'I + <b>have</b> + never + V3.'},
+ {q:'____ you seen Plushenko’s performance?',opts:['Have','Has','Do'],a:'Have',fixed:1,blank:1,ex:'Question: <b>Have</b> + you + V3 …?'},
+ {q:'____ she participated in the competition?',opts:['Have','Has','Does'],a:'Has',fixed:1,blank:1,ex:'Question: <b>Has</b> + she + V3 …?'},
+ {q:'Simone ____ won a lot of medals.',opts:['have','has','is'],a:'has',fixed:1,blank:1,ex:'Simone = she → <b>has</b> won.'},
+ {q:'Megan Rapinoe has just ____ a goal.',opts:['score','scored','scoring'],a:'scored',fixed:1,blank:1,ex:'has / have + <b>V3</b>: has scored.'},
+ {q:'I have just ____ on the TV.',opts:['turn','turned','turning'],a:'turned',fixed:1,blank:1,ex:'have + V3: have just turned on.'}
+];
+var ANS7=['Yes, I have. He’s brilliant.','No, she hasn’t.','Megan Rapinoe has just scored a goal!','They have lost the game.','I don’t know. I have just turned on the TV.'];
+var Q_QA=[
+ {q:'<b>1.</b> Who has won the game?',a:ANS7[4],ex:'Example in your book: 1 – e.'},
+ {q:'<b>2.</b> What has happened?',a:ANS7[2],ex:'Something has happened: Megan has just scored a goal!'},
+ {q:'<b>3.</b> Have you seen Plushenko’s performance?',a:ANS7[0],ex:'Have you seen …? – Yes, I have.'},
+ {q:'<b>4.</b> Has she participated in the competition?',a:ANS7[1],ex:'Has she …? – No, she hasn’t.'},
+ {q:'<b>5.</b> What have they done?',a:ANS7[3],ex:'They have lost the game.'}
+].map(function(x){x.opts=ANS7;x.fixed=1;return x});
+var Q_CLOZE=[
+ {q:'I ____ just watched the game. What a game!',opts:['have','has','had'],a:'have',fixed:1,blank:1,ex:'I + have + just + V3.'},
+ {q:'Megan Rapinoe is the best football ____.',opts:['player','winner','team'],a:'player',fixed:1,blank:1,ex:'football player = fotbalist, футболист.'},
+ {q:'She ____ work miracles with the ball.',opts:['can','is','has'],a:'can',fixed:1,blank:1,ex:'can + verb: She can work miracles.'},
+ {q:'Have you seen what ____ she has scored?',opts:['goal','game','team'],a:'goal',fixed:1,blank:1,ex:'what goal = ce gol, какой гол.'},
+ {q:'What I like about her is that she never ____ up.',opts:['gives','gets','takes'],a:'gives',fixed:1,blank:1,ex:'give up = a renunța, сдаваться. She → gives.'},
+ {q:'She is the captain of the United States women’s national soccer ____.',opts:['team','player','match'],a:'team',fixed:1,blank:1,ex:'soccer team = football team.'},
+ {q:'She’s my ____! She inspires me.',opts:['hero','winner','coach'],a:'hero',fixed:1,blank:1,ex:'A hero is a person whom you admire very much.'},
+ {q:'I know I ____ realize my goals if I work hard.',opts:['can','am','have'],a:'can',fixed:1,blank:1,ex:'I can realize my goals.'},
+ {q:'What I need is courage and ____.',opts:['determination','medal','jump'],a:'determination',fixed:1,blank:1,ex:'courage and determination = the qualities of a winner.'}
+];
+var Q_TAG1=[
+ {q:'“She can become an amazing athlete, ____?”<br>“Yes, she can. She should practise more.”',type:'type',acc:["can't she"],a:'can’t she',hint:'Positive statement → negative tag: can → can’t + she',ex:'Positive statement (can) → negative tag: <b>can’t she</b>?'},
+ {q:'“You have seen Megan Rapinoe’s goal, ____?”<br>“Yes, I have. It was brilliant!”',type:'type',acc:["haven't you"],a:'haven’t you',hint:'have → haven’t + you',ex:'Positive statement (have seen) → negative tag: <b>haven’t you</b>?'},
+ {q:'“You can’t skate, ____?”<br>“No, I can’t. But I want to learn to skate.”',type:'type',acc:["can you"],a:'can you',hint:'Negative statement → positive tag: can + you',ex:'Negative statement (can’t) → positive tag: <b>can you</b>?'},
+ {q:'“Dan can play basketball very well, ____?”<br>“Yes, he can. He is the captain of the school’s basketball team.”',type:'type',acc:["can't he"],a:'can’t he',hint:'can → can’t + he',ex:'Positive statement → negative tag: <b>can’t he</b>?'},
+ {q:'“They haven’t seen Plushenko’s performance, ____?”<br>“Unfortunately they have missed it.”',type:'type',acc:["have they"],a:'have they',hint:'Negative statement → positive tag: have + they',ex:'Negative statement (haven’t seen) → positive tag: <b>have they</b>?'}
+];
+var Q_TAG2=[
+ {q:'You can swim, ____?',opts:['can’t you','can you','don’t you'],a:'can’t you',fixed:1,blank:1,ex:'Positive → negative tag.'},
+ {q:'Maria can’t ski, ____?',opts:['can she','can’t she','does she'],a:'can she',fixed:1,blank:1,ex:'Negative → positive tag.'},
+ {q:'They have won, ____?',opts:['haven’t they','have they','don’t they'],a:'haven’t they',fixed:1,blank:1,ex:'Positive → negative tag.'},
+ {q:'Bob hasn’t seen it, ____?',opts:['hasn’t he','has he','have he'],a:'has he',fixed:1,blank:1,ex:'Negative → positive tag.'},
+ {q:'Simone has won many medals, ____?',opts:['hasn’t she','has she','haven’t she'],a:'hasn’t she',fixed:1,blank:1,ex:'has → hasn’t + she.'},
+ {q:'You haven’t seen the match, ____?',opts:['haven’t you','have you','has you'],a:'have you',fixed:1,blank:1,ex:'Negative → positive tag.'},
+ {q:'Dan can’t swim, ____?',opts:['can he','can’t he','does he'],a:'can he',fixed:1,blank:1,ex:'Negative → positive tag.'},
+ {q:'We have lost the game, ____?',opts:['haven’t we','have we','don’t we'],a:'haven’t we',fixed:1,blank:1,ex:'Positive → negative tag.'}
+];
+var Q_DIAL=[
+ {q:'Andi: Have you seen the football ____?',opts:['match','captain','medal'],a:'match',fixed:1,blank:1,ex:'a football match = un meci de fotbal, футбольный матч.'},
+ {q:'Nina: Yes, I ____. What a show!',opts:['have','did','am'],a:'have',fixed:1,blank:1,ex:'Have you seen …? – Yes, I have.'},
+ {q:'Andi: It was amazing! The team ____ very well.',opts:['played','play','plays'],a:'played',fixed:1,blank:1,ex:'The match is over, so we use the past: played.'},
+ {q:'Nina: And Messi was brilliant! He ____ two beautiful goals.',opts:['scored','scores','score'],a:'scored',fixed:1,blank:1,ex:'score → scored (past).'},
+ {q:'Andi: Well, I didn’t know you are ____ of football.',opts:['fond','good','full'],a:'fond',fixed:1,blank:1,ex:'be fond of = a-i plăcea mult, любить.'},
+ {q:'Nina: Actually, I am. But I ____ never played football.',opts:['have','had','am'],a:'have',fixed:1,blank:1,ex:'I have never played = până acum n-am jucat, я никогда не играла.'},
+ {q:'Andi: You know what, we ____ play football together.',opts:['can','are','have'],a:'can',fixed:1,blank:1,ex:'can + verb: we can play.'}
+];
+var NKIPA=[['bank','/bæŋk/','/bænk/','/beɪŋk/'],['pink','/pɪŋk/','/pɪnk/','/paɪŋk/'],['thank','/θæŋk/','/θænk/','/sæŋk/'],['ink','/ɪŋk/','/ɪnk/','/aɪŋk/'],['tank','/tæŋk/','/tænk/','/teɪŋk/'],['sink','/sɪŋk/','/sɪnk/','/saɪŋk/'],['prank','/præŋk/','/prænk/','/preɪŋk/'],['frank','/fræŋk/','/frænk/','/freɪŋk/'],['drink','/drɪŋk/','/drɪnk/','/draɪŋk/'],['think','/θɪŋk/','/θɪnk/','/θaɪŋk/']];
+function nkItems(){
+ return shuffle(NKIPA).slice(0,8).map(function(p){return {q:'Choose the correct transcription of <b>'+p[0]+'</b>.',opts:[p[1],p[2],p[3]],a:p[1],say:p[0],ex:p[0]+' '+p[1]+'. The letters “nk” sound like /ŋk/, not /nk/.'}});
+}
+var Q_NK2=[
+ {q:'Which word ends in the sound /ŋk/?',opts:['bank','bang','band'],a:'bank',say:'bank',ex:'bank /bæŋk/'},
+ {q:'Which word ends in the sound /ŋk/?',opts:['pin','pink','pig'],a:'pink',say:'pink',ex:'pink /pɪŋk/'},
+ {q:'Which word ends in the sound /ŋk/?',opts:['thing','thin','think'],a:'think',say:'think',ex:'think /θɪŋk/'},
+ {q:'Which word ends in the sound /ŋk/?',opts:['sing','sink','sit'],a:'sink',say:'sink',ex:'sink /sɪŋk/'},
+ {q:'Which word ends in the sound /ŋk/?',opts:['tan','tag','tank'],a:'tank',say:'tank',ex:'tank /tæŋk/'},
+ {q:'Which word ends in the sound /ŋk/?',opts:['drink','drip','drill'],a:'drink',say:'drink',ex:'drink /drɪŋk/'}
+];
+
+/* ---------- HELPERS ---------- */
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function norm(s){return String(s).toLowerCase().replace(/’/g,"'").replace(/[.!?,;]+$/,'').replace(/\s+/g,' ').trim()}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+var S={name:'',q:{}};
+try{var raw=localStorage.getItem('uf4-quest');if(raw){var o=JSON.parse(raw);if(o&&o.q)S=o}}catch(e){}
+function save(){try{localStorage.setItem('uf4-quest',JSON.stringify(S))}catch(e){}}
+function totalXP(){var t=0;for(var k in S.q)t+=S.q[k].pts;return t}
+var app=document.getElementById('app');
+var canSay=('speechSynthesis' in window)&&typeof SpeechSynthesisUtterance!=='undefined';
+function say(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function listenBtn(t){return canSay?'<button class="listen" type="button" data-say="'+esc(t)+'" aria-label="Listen">Listen</button>':''}
+function rate(c,t){var p=t?c/t:0;return p>=.85?3:p>=.6?2:1}
+function starsSVG(n){var s='';for(var i=0;i<3;i++)s+='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="'+(i<n?'star-on':'star-off')+'" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';return '<span class="stars" role="img" aria-label="'+n+' of 3 stars">'+s+'</span>'}
+function tri(en,ro,ru){return '<div class="lng"><span class="lang" style="background:var(--green)">EN</span><span>'+en+'</span></div><div class="lng"><span class="lang">RO</span><span>'+ro+'</span></div><div class="lng"><span class="lang ru">RU</span><span>'+ru+'</span></div>'}
+function mk(root,cls,html){var d=document.createElement('section');d.className=cls||'card';if(html)d.innerHTML=html;root.appendChild(d);return d}
+function copyText(text,btn,host){
+ var label=btn.textContent;
+ function ok(){btn.textContent='Copied';setTimeout(function(){btn.textContent=label},1600)}
+ function fallback(){
+  var t=host.querySelector('textarea.copybox');
+  if(!t){t=document.createElement('textarea');t.className='copybox';t.readOnly=true;t.style.minHeight='110px';t.style.marginTop='8px';host.appendChild(t)}
+  t.value=text;t.focus();t.select();btn.textContent='Select and copy the text below';
+ }
+ try{navigator.clipboard.writeText(text).then(ok,fallback)}catch(e){fallback()}
+}
+
+/* ---------- QUIZ ENGINE ---------- */
+function quiz(root,id,title,items,intro){
+ var card=mk(root,'card quiz');card.id='q-'+id;
+ var list,i,pts,c,tries;
+ function start(){list=typeof items==='function'?items():items;i=0;pts=0;c=0;step()}
+ function step(){
+  if(i>=list.length)return finish();
+  var it=list[i];tries=0;
+  var opts=it.type?null:(it.fixed?it.opts.slice():shuffle(it.opts));
+  var maxT=opts?Math.min(2,opts.length-1):2;
+  var acc=(it.acc||[it.a]).map(norm);
+  card.innerHTML='<div class="qhead"><h3>'+title+'</h3><span class="count">'+(i+1)+' / '+list.length+'</span></div><div class="bar"><i style="width:'+(i/list.length*100)+'%"></i></div>'+(intro&&i===0?'<p class="intro">'+intro+'</p>':'')+'<p class="prompt"></p><div class="answers'+(it.blank&&opts&&opts.length>3?' bank':'')+'"></div><div class="fb" role="status" aria-live="polite"></div><div class="nav"></div>';
+  var prompt=card.querySelector('.prompt'),ans=card.querySelector('.answers'),fb=card.querySelector('.fb'),nav=card.querySelector('.nav');
+  function showQ(f){prompt.innerHTML=it.blank||it.type?it.q.replace('____',f?'<b class="fill">'+f+'</b>':'<span class="blank">&nbsp;</span>'):it.q}
+  showQ();
+  if(it.say)nav.innerHTML=listenBtn(it.say);
+  function lock(){ans.querySelectorAll('button,input').forEach(function(b){b.disabled=true})}
+  function award(){var p=tries===0?10:tries===1?5:0;pts+=p;if(tries===0)c++;return p}
+  function next(){
+   var last=i===list.length-1;
+   nav.insertAdjacentHTML('beforeend','<button class="btn" type="button">'+(last?'See my score':'Next')+'</button>');
+   var b=nav.querySelector('.btn');b.focus();b.onclick=function(){i++;step()};
+  }
+  function right(shown){var p=award();showQ(shown);fb.innerHTML='<span class="ok">Correct!'+(p?' +'+p+' XP':'')+'</span> '+(it.ex||'');lock();next()}
+  function reveal(){showQ(it.a);fb.innerHTML='<span class="no">Not quite.</span> The answer is <b>'+it.a+'</b>. '+(it.ex||'');lock();
+   ans.querySelectorAll('button.opt').forEach(function(b){if(acc.indexOf(norm(b.textContent))>-1)b.classList.add('good')});next()}
+  if(opts){
+   opts.forEach(function(o){
+    var b=document.createElement('button');b.type='button';b.className='opt';b.textContent=o;
+    b.onclick=function(){
+     if(acc.indexOf(norm(o))>-1){b.classList.add('good');right(o)}
+     else{b.classList.add('bad','shake');b.disabled=true;tries++;
+      if(tries>=maxT)reveal();else fb.innerHTML='<span class="no">Try again.</span> You can still earn 5 XP.'}
+    };
+    ans.appendChild(b);
+   });
+  }else{
+   ans.className='typebox';
+   ans.innerHTML='<input type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your answer" placeholder="Type the word"><button class="btn" type="button">Check</button>';
+   var inp=ans.querySelector('input'),go=ans.querySelector('button');
+   function check(){
+    var v=norm(inp.value);if(!v)return;
+    if(acc.indexOf(v)>-1){right(it.a||it.acc[0])}
+    else{tries++;inp.classList.add('shake');
+     if(tries>=2){it.a=it.a||it.acc[0];reveal()}
+     else{fb.innerHTML='<span class="no">Try again.</span> Hint: '+(it.hint||('it starts with “'+acc[0].charAt(0)+'” and has '+acc[0].length+' letters.'));inp.select()}}
+   }
+   go.onclick=check;inp.onkeydown=function(e){if(e.key==='Enter')check()};
+   inp.focus();
+  }
+ }
+ function finish(){
+  var rec=S.q[id];if(!rec||pts>=rec.pts){S.q[id]={pts:pts,c:c,t:list.length};save()}
+  card.innerHTML='<div class="result"><h3>'+title+'</h3>'+starsSVG(rate(c,list.length))+'<div class="big">'+c+' of '+list.length+' right the first time</div><p class="note">+'+pts+' XP this round. Best round: '+S.q[id].pts+' XP.</p><button class="btn" type="button">Play again</button></div>';
+  card.querySelector('.btn').onclick=start;
+  refreshHud();
+ }
+ start();
+}
+
+/* ---------- BLOCKS ---------- */
+function tokenise(t){return t.replace(/[A-Za-z]+/g,function(m){var k=m.toLowerCase();return GL[k]?'<button type="button" class="w'+(NEWW[k]?' new':'')+'" data-k="'+k+'">'+m+'</button>':m})}
+
+function readBlock(root,title,lines,note){
+ var card=mk(root,'card','<h2>'+title+'</h2><p class="note">'+note+'</p><div class="dialogue">'+lines.map(function(l){
+  return '<div class="line"><span class="who '+l[0].toLowerCase()+'">'+l[0]+'</span><p class="say">'+tokenise(l[1])+'</p>'+listenBtn(l[1])+'</div>'}).join('')+'</div><div class="gloss hidden" role="status" aria-live="polite"></div>');
+ var g=card.querySelector('.gloss');
+ card.addEventListener('click',function(e){
+  var w=e.target.closest('.w');if(!w)return;
+  var k=w.dataset.k,x=GL[k];
+  g.innerHTML='<b>'+k+'</b><span><span class="lang">RO</span> '+x[0]+'</span><span><span class="lang ru">RU</span> '+x[1]+'</span>';
+  g.classList.remove('hidden');
+ });
+}
+
+function vocabBlock(root,only,title){
+ var card=mk(root,'card','<h2>'+(title||'New vocabulary')+'</h2><p class="note">Every word has its pronunciation, Romanian and Russian translation, and an example from the lesson. Press Listen to hear it.</p><div class="row-wrap" style="margin-top:8px"><button class="btn ghost small" type="button" id="cover">Test myself: hide translations</button></div><div id="vg"></div>');
+ var vg=card.querySelector('#vg');
+ VOCAB.forEach(function(gr,gi){if(only&&only.indexOf(gi)<0)return;
+  var colour={green:'var(--green)',blue:'var(--blue)',pink:'var(--pink)'}[gr.tint];
+  var h='<div class="grouphead"><i style="background:'+colour+'"></i><h3>'+gr.g+'</h3></div><div class="vgrid">';
+  gr.items.forEach(function(w){
+   h+='<div class="vc"><div class="row-wrap" style="justify-content:space-between"><span class="en">'+w.en+'</span>'+listenBtn(w.en)+'</div>'+(w.ipa?'<span class="ipa">'+w.ipa+'</span>':'')+'<div class="tr"><span class="lang">RO</span><span>'+w.ro+'</span></div><div class="tr"><span class="lang ru">RU</span><span>'+w.ru+'</span></div><span class="eg">'+w.ex+'</span></div>';
+  });
+  vg.insertAdjacentHTML('beforeend',h+'</div>');
+ });
+ var btn=card.querySelector('#cover'),covered=false;
+ btn.onclick=function(){
+  covered=!covered;
+  vg.querySelectorAll('.vc').forEach(function(v){v.classList.toggle('cover',covered);v.classList.remove('shown')});
+  btn.textContent=covered?'Show all translations':'Test myself: hide translations';
+ };
+ vg.addEventListener('click',function(e){var v=e.target.closest('.vc.cover');if(v&&!e.target.closest('.listen'))v.classList.toggle('shown')});
+}
+
+function matchGame(root,poolArg){
+ var card=mk(root,'card');var lang='ro';
+ function round(){
+  var pool=shuffle(poolArg||CORE).slice(0,6),right=shuffle(pool),sel=null,done=0,first=0,missed={};
+  card.innerHTML='<h3>Match the words</h3><p class="note">Tap an English word, then tap its translation. Each first-try match gives 5 XP.</p><div class="row-wrap" style="margin-top:8px"><button class="chip'+(lang==='ro'?' on':'')+'" data-l="ro" type="button">Romanian</button><button class="chip'+(lang==='ru'?' on':'')+'" data-l="ru" type="button">Russian</button></div><div class="matchgrid"></div><div class="fb" role="status" aria-live="polite"></div>';
+  var grid=card.querySelector('.matchgrid'),fb=card.querySelector('.fb');
+  pool.forEach(function(w,i){
+   var l=document.createElement('button');l.type='button';l.textContent=w.en;l.dataset.k=w.en;l.style.gridColumn='1';grid.appendChild(l);
+   var r=document.createElement('button');r.type='button';r.textContent=right[i][lang];r.dataset.k=right[i].en;r.style.gridColumn='2';grid.appendChild(r);
+   l.dataset.side='l';r.dataset.side='r';
+  });
+  grid.addEventListener('click',function(e){
+   var b=e.target.closest('button');if(!b||b.classList.contains('done'))return;
+   if(b.dataset.side==='l'){if(sel)sel.classList.remove('sel');sel=b;b.classList.add('sel');return}
+   if(!sel)return;
+   if(sel.dataset.k===b.dataset.k){
+    sel.classList.remove('sel');sel.classList.add('done');b.classList.add('done');
+    if(!missed[sel.dataset.k])first++;
+    sel=null;done++;
+    if(done===6){
+     var p=first*5,rec=S.q.match;if(!rec||p>=rec.pts){S.q.match={pts:p,c:first,t:6};save()}
+     fb.innerHTML='<div class="result">'+starsSVG(rate(first,6))+'<div class="big">'+first+' of 6 on the first try (+'+p+' XP)</div><button class="btn" type="button" id="again">New round</button></div>';
+     fb.querySelector('#again').onclick=round;refreshHud();
+    }
+   }else{
+    missed[sel.dataset.k]=true;b.classList.add('shake');sel.classList.add('shake');
+    var s2=sel;setTimeout(function(){b.classList.remove('shake');s2.classList.remove('shake')},350);
+    fb.innerHTML='<span class="no">Not that one.</span> Try again.';
+   }
+  });
+  card.querySelectorAll('[data-l]').forEach(function(c){c.onclick=function(){lang=c.dataset.l;round()}});
+ }
+ round();
+}
+
+/* ---------- SENTENCE BUILDER ---------- */
+function scramble(root,id,title,list,intro){
+ var card=mk(root,'card quiz');card.id='q-'+id;
+ var i,pts,c,tries,picks,order,ws,it,finished,msg;
+ function start(){i=0;pts=0;c=0;next()}
+ function next(){
+  if(i>=list.length)return finish();
+  it=list[i];tries=0;picks=[];finished=false;msg='';
+  ws=it.s.split(' ');
+  var idx=ws.map(function(w,k){return k}),g=0;
+  order=shuffle(idx);while(order.join()===idx.join()&&g++<10)order=shuffle(idx);
+  render();
+ }
+ function render(){
+  card.innerHTML='<div class="qhead"><h3>'+title+'</h3><span class="count">'+(i+1)+' / '+list.length+'</span></div><div class="bar"><i style="width:'+(i/list.length*100)+'%"></i></div>'+(i===0&&intro?'<p class="intro">'+intro+'</p>':'')+
+   '<span class="bigpic">'+it.pic+'</span><div class="built" aria-live="polite">'+(picks.length?picks.map(function(k){return '<span>'+ws[k]+'</span>'}).join(' '):'<span class="note">Tap the words in the right order. Нажимай слова по порядку.</span>')+'</div>'+
+   '<div class="answers wordbank">'+order.map(function(k){return '<button type="button" class="opt" data-k="'+k+'"'+(finished||picks.indexOf(k)>-1?' disabled':'')+'>'+ws[k]+'</button>'}).join('')+'</div>'+
+   '<div class="fb" role="status" aria-live="polite">'+msg+'</div><div class="tools">'+(finished?'':'<button class="btn ghost small" type="button" data-act="undo">Undo</button> <button class="btn ghost small" type="button" data-act="clear">Clear</button> ')+(canSay?'<button class="listen" type="button" data-say="'+esc(it.s)+'">Listen</button>':'')+'</div><div class="nav"></div>';
+  if(finished){
+   var nav=card.querySelector('.nav'),last=i===list.length-1;
+   nav.innerHTML='<button class="btn" type="button" data-act="next">'+(last?'See my score':'Next')+'</button>';
+   nav.querySelector('.btn').focus();
+  }
+ }
+ card.addEventListener('click',function(e){
+  var a=e.target.closest('[data-act]');
+  if(a){
+   var act=a.dataset.act;
+   if(act==='undo'){picks.pop();msg='';render()}
+   else if(act==='clear'){picks=[];msg='';render()}
+   else if(act==='next'){i++;next()}
+   return;
+  }
+  var b=e.target.closest('.opt');if(!b||b.disabled||finished)return;
+  picks.push(+b.dataset.k);
+  if(picks.length<ws.length){render();return}
+  var built=picks.map(function(k){return ws[k]}).join(' ');
+  if(built===it.s){
+   var p=tries===0?10:5;pts+=p;if(tries===0)c++;
+   msg='<span class="ok">Correct! +'+p+' points</span>';finished=true;render();
+  }else{
+   tries++;
+   if(tries>=2){msg='<span class="no">Not quite.</span> The sentence is: <b>'+it.s+'</b>';finished=true;picks=ws.map(function(w,k){return k});render()}
+   else{picks=[];msg='<span class="no">Try again.</span> You can still earn 5 points.';render()}
+  }
+ });
+ function finish(){
+  var rec=S.q[id];if(!rec||pts>=rec.pts){S.q[id]={pts:pts,c:c,t:list.length};save()}
+  card.innerHTML='<div class="result"><h3>'+title+'</h3>'+starsSVG(rate(c,list.length))+'<div class="big">'+c+' of '+list.length+' right the first time</div><p class="note">+'+pts+' points this round. Best round: '+S.q[id].pts+'.</p><button class="btn" type="button" id="again">Play again</button></div>';
+  card.querySelector('#again').onclick=start;
+  refreshHud();
+ }
+ start();
+}
+
+
+/* ---------- LESSON FOUR BLOCKS ---------- */
+var DR={};try{DR=JSON.parse(localStorage.getItem('uf4-draft')||'{}')||{}}catch(e){DR={}}
+function setDraft(k,v){DR[k]=v;try{localStorage.setItem('uf4-draft',JSON.stringify(DR))}catch(e){}}
+function words(t){return t.trim()?t.trim().split(/\s+/).length:0}
+function attachGloss(card){
+ var g=card.querySelector('.gloss');
+ card.addEventListener('click',function(e){
+  var w=e.target.closest('.w');if(!w||!g)return;
+  var k=w.dataset.k,x=GL[k];
+  g.innerHTML='<b>'+k+'</b><span><span class="lang">RO</span> '+x[0]+'</span><span><span class="lang ru">RU</span> '+x[1]+'</span>';
+  g.classList.remove('hidden');
+ });
+}
+function revealCard(root,title,note,btnLabel,build){
+ var card=mk(root,'card','<h2>'+title+'</h2><p class="note">'+note+'</p><div class="row-wrap" style="margin-top:8px"><button class="btn ghost" type="button" id="rv">'+btnLabel+'</button></div><div id="rvc"></div>');
+ card.querySelector('#rv').onclick=function(){card.querySelector('#rvc').innerHTML=build();this.remove();attachGloss(card)};
+}
+
+function heroCard(root){
+ var Q=['Do you have a hero?','If so, who is your hero?','Why is he / she your hero?','What impresses you about him / her?','What can your hero do?'];
+ var card=mk(root,'card','<h2>Speaking: My hero</h2><div class="eg-box">A <b>hero</b> is a person whom you admire very much.<br><span class="note">erou: o persoană pe care o admiri foarte mult · герой: человек, которым вы очень восхищаетесь</span></div>'+
+  '<p class="note" style="margin-top:10px">In pairs, ask and answer. Then report your findings to the class.</p><div class="dialogue">'+Q.map(function(q){return '<div class="line"><span class="who tim">?</span><p class="say">'+q+'</p>'+listenBtn(q)+'</div>'}).join('')+'</div>'+
+  '<div class="spin" id="hq" style="margin-top:12px" aria-live="polite">Press “New question”.</div><div class="row-wrap"><button class="btn" id="hqb" type="button">New question</button></div>'+
+  '<h3 style="margin-top:14px">Report your findings</h3><div class="explain" style="margin-top:6px"><div class="eg-box">Ion’s hero is … He admires her because …</div><div class="eg-box">Both of us admire … We think that … is brilliant.</div><div class="eg-box">What impresses Maria is his / her … and …</div></div>');
+ var last=-1,hq=card.querySelector('#hq');
+ card.querySelector('#hqb').onclick=function(){var n;do{n=Math.floor(Math.random()*Q.length)}while(n===last);last=n;hq.innerHTML=Q[n]+' '+listenBtn(Q[n])};
+}
+function simoneBlock(root){
+ var card=mk(root,'card','<h2>Ana’s hero: Simone Biles</h2><p class="note">Read the text and say why Simone Biles is Ana’s hero. Tap an underlined word for its translation. Darker words are new.</p><div class="textpanel">'+
+  SIMONE.map(function(p,i){return '<p style="margin-bottom:10px">'+tokenise(p)+' '+listenBtn(p)+'</p>'}).join('')+'</div><div class="gloss hidden" role="status" aria-live="polite"></div>');
+ attachGloss(card);
+}
+function openCard(root){
+ mk(root,'card','<h2>Exercise 3: your turn</h2><p class="note">Answer questions 3 and 4 in your own words.</p><div class="explain" style="margin-top:8px"><div class="eg-box"><b>3.</b> What qualities do you think are necessary to realize your goals?<br><span class="note">I think we need … , … and … to realize our goals.</span></div><div class="eg-box"><b>4.</b> Do you have a goal? What do you do to realize it?<br><span class="note">My goal is to … To realize it, I … every day.</span></div><div class="eg-box">Useful: <b>hard work · determination · courage · never give up · believe in yourself</b></div></div>');
+}
+function erCard(root){
+ mk(root,'card','<h2>Language Facts: verb + -er = the doer</h2><div class="explain">'+
+  tri('<b>V + er → N</b>: we add <b>-er</b> to a verb to name the person who does the action.','<b>V + er → N</b>: adăugăm <b>-er</b> la verb și obținem substantivul care numește persoana ce face acțiunea.','<b>V + er → N</b>: добавляем <b>-er</b> к глаголу и получаем существительное — «тот, кто делает действие».')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th>Rule</th><th>Examples</th></tr>'+
+  '<tr><td>Most verbs: + <b>er</b></td><td>play → play<b>er</b>, box → box<b>er</b>, defend → defend<b>er</b>, teach → teach<b>er</b>, ski → ski<b>er</b></td></tr>'+
+  '<tr><td>Verbs ending in <b>-e</b>: + <b>r</b></td><td>dance → dance<b>r</b>, skate → skate<b>r</b>, write → write<b>r</b></td></tr>'+
+  '<tr><td>One vowel + one consonant: double the consonant</td><td>win → win<b>n</b>er, swim → swim<b>m</b>er, run → run<b>n</b>er</td></tr></table></div>'+
+  '<div class="eg-box" style="margin-top:10px">Not every noun in -er comes from a verb: <i>soccer</i> = football (American English).</div>');
+}
+function peopleCard(root){
+ mk(root,'card','<h2>Exercise 6: who are they?</h2><p class="note">Use the words from Exercises 4 and 5. Example: <i>Serena Williams is a brilliant tennis player. She can play tennis very well.</i></p><div class="vgrid">'+
+  PEOPLE.map(function(p){return '<div class="vc"><span class="vpic" aria-hidden="true">'+p.pic+'</span><span class="en">'+p.n+'</span><span class="eg">'+p.he+' is a brilliant '+p.noun+'. '+p.he+' can '+p.verb+' very well.</span>'+listenBtn(p.n+' is a brilliant '+p.noun+'. '+p.he+' can '+p.verb+' very well.')+'</div>'}).join('')+'</div>');
+}
+function writeStars(root){
+ var card=mk(root,'card','<h2>Exercise 6: write about the people</h2><p class="note">Write two sentences about each person. Say what he or she is and what he or she can do. Use -er nouns and amazing, brilliant, fantastic or perfect.</p>'+
+  PEOPLE.map(function(p,i){return '<div class="mine"><label for="ps'+i+'" style="flex:1 1 100%">'+p.n+'</label><input id="ps'+i+'" type="text" autocomplete="off" spellcheck="false" style="width:100%" placeholder="'+p.he+' is a brilliant … '+p.he+' can …"><div class="st note" id="ps'+i+'-st"></div></div>'}).join('')+
+  '<div class="row-wrap" style="margin-top:12px"><button class="btn" type="button" id="pchk">Check my sentences</button></div><div class="fb" role="status" aria-live="polite"></div>');
+ var fb=card.querySelector('.fb');
+ PEOPLE.forEach(function(p,i){var inp=card.querySelector('#ps'+i);if(DR['ps'+i])inp.value=DR['ps'+i];inp.oninput=function(){setDraft('ps'+i,inp.value)}});
+ card.querySelector('#pchk').onclick=function(){
+  var ok=0,filled=0;
+  PEOPLE.forEach(function(p,i){
+   var v=card.querySelector('#ps'+i).value.trim(),st=card.querySelector('#ps'+i+'-st');
+   if(!v){st.textContent='';return}
+   filled++;
+   var probs=[];
+   if(!/\bis an? (\w+ )?(\w+ )?(player|swimmer|runner|skater|skier|athlete|sprinter|boxer|dancer|defender)\b/i.test(v))probs.push('Say what he or she is: “is a brilliant …er”.');
+   if(!/\bcan \w+/i.test(v))probs.push('Say what he or she can do: “can … very well”.');
+   if(!/^[A-Z]/.test(v)||!/[.!?]$/.test(v))probs.push('Use a capital letter and a full stop.');
+   if(!probs.length){ok++;st.innerHTML='<span style="color:var(--good);font-weight:800">Good!</span>'}
+   else st.innerHTML='<span style="color:var(--bad);font-weight:800">Check:</span> '+probs.join(' ');
+  });
+  if(filled<6){fb.innerHTML='<span class="no">Write about all six people, then check again.</span>';return}
+  var p=ok*10,rec=S.q.wstars;if(!rec||p>=rec.pts){S.q.wstars={pts:p,c:ok,t:6};save()}
+  fb.innerHTML='<div class="result">'+starsSVG(rate(ok,6))+'<div class="big">'+ok+' of 6 are correct (+'+p+' XP)</div></div>';
+  refreshHud();
+ };
+}
+function ppCard(root){
+ mk(root,'card','<h2>Grammar: have / has + V3</h2><div class="explain">'+
+  tri('We use <b>have / has + past participle (V3)</b> for something that has happened and is important now. Time words: <b>just, never, already</b>.','Folosim <b>have / has + participiul trecut (V3)</b> pentru o acțiune încheiată, dar importantă acum. Cuvinte: <b>just</b> (tocmai), <b>never</b> (niciodată), <b>already</b> (deja).','Используем <b>have / has + третья форма глагола (V3)</b> для действия, которое уже произошло и важно сейчас. Слова: <b>just</b> (только что), <b>never</b> (никогда), <b>already</b> (уже).')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th></th><th>I / you / we / they</th><th>he / she / it</th></tr>'+
+  '<tr><td>+</td><td>They <b>have</b> lost the game.</td><td>Megan <b>has just</b> scored a goal!</td></tr>'+
+  '<tr><td>−</td><td>I <b>have never</b> played football.</td><td>She <b>hasn’t</b> participated.</td></tr>'+
+  '<tr><td>?</td><td><b>Have</b> you seen Plushenko’s performance?<br>Yes, I <b>have</b>.</td><td><b>Has</b> she participated in the competition?<br>No, she <b>hasn’t</b>.</td></tr>'+
+  '<tr><td>Wh-</td><td>What <b>have</b> they done?</td><td>What <b>has</b> happened? Who <b>has</b> won the game?</td></tr></table></div>'+
+  '<h3 style="margin-top:14px">Past participles (V3)</h3><div class="scroll"><table><tr><th>Regular: + -ed</th><th>Irregular: learn them</th></tr><tr><td>score → scored<br>happen → happened<br>watch → watched<br>turn → turned<br>miss → missed<br>participate → participated</td><td>win → <b>won</b><br>lose → <b>lost</b><br>see → <b>seen</b><br>do → <b>done</b></td></tr></table></div>');
+}
+function tagCard(root){
+ mk(root,'card','<h2>Grammar: tag questions</h2><div class="explain">'+
+  tri('A <b>tag question</b> is a short question at the end of a sentence. <b>Positive statement → negative tag.</b> <b>Negative statement → positive tag.</b> The tag repeats the helping verb (can, have, has) and uses a pronoun.','<b>Tag question</b> = întrebare scurtă la sfârșitul propoziției. <b>Afirmație → tag negativ. Negație → tag pozitiv.</b> Tag-ul repetă verbul auxiliar (can, have, has) și folosește un pronume.','<b>Tag question</b> — короткий вопрос в конце предложения. <b>Утверждение → отрицательный хвостик. Отрицание → положительный хвостик.</b> Хвостик повторяет вспомогательный глагол (can, have, has) и местоимение.')+
+  '</div><div class="scroll" style="margin-top:12px"><table><tr><th>Statement</th><th>Tag</th></tr>'+
+  [['You can swim,','can’t you?'],['Maria can’t ski,','can she?'],['They have won,','haven’t they?'],['Bob hasn’t seen it,','has he?']].map(function(r){return '<tr><td>'+r[0]+'</td><td><b>'+r[1]+'</b> '+listenBtn(r[0]+' '+r[1])+'</td></tr>'}).join('')+'</table></div>'+
+  '<div class="eg-box" style="margin-top:12px"><b>Intonation:</b> voice goes up ↗ when you really ask. Voice goes down ↘ when you are almost sure and want to hear “yes”.<br><span class="note">Intonația urcă când întrebi cu adevărat și coboară când ești aproape sigur · Голос идёт вверх, когда вы действительно спрашиваете, и вниз, когда почти уверены.</span></div>'+
+  '<div class="eg-box" style="margin-top:8px">Example: Maria <b>can</b> play the guitar, <b>can’t</b> she?</div>');
+}
+function talkCard(root){
+ mk(root,'card','<h2>Speaking: is football a game for boys only?</h2><div class="explain"><div class="eg-box">I think football is a game for <b>everybody</b> because …</div><div class="eg-box">In my opinion, girls <b>can</b> play football as well as boys because …</div><div class="eg-box">I agree / I don’t agree, because …</div></div>'+
+  '<h3 style="margin-top:14px">Exercise 12: describe the picture</h3><div class="explain" style="margin-top:6px"><div class="eg-box">In the picture I can see two players and a ball.</div><div class="eg-box">It is a football game. The players are young.</div><div class="eg-box">Is there anything unusual? One player is a girl.</div><div class="eg-box">In pairs, make up a dialogue before the game: A: Good luck! B: Thanks! You too!</div></div>');
+}
+function posterCard(root){
+ mk(root,'card','<h2>Exercise 13: poster about your hero</h2><div class="explain"><div class="eg-box"><b>1.</b> A big title: <i>My hero: …</i> and a picture.</div><div class="eg-box"><b>2.</b> Three facts with have / has + V3: <i>She has won … He has scored …</i></div><div class="eg-box"><b>3.</b> Two qualities: <i>determination, courage</i>.</div><div class="eg-box"><b>4.</b> A quotation: <i>I’m the first …</i></div><div class="eg-box"><b>Presentation:</b> Hello! My hero is … I admire … because … Thank you for listening!</div></div>');
+}
+function heroWrite(root){
+ var PARTS=[
+  {k:'h1',t:'1. Introduction',h:'Who is your hero? What is he or she?',ph:'My hero is … I simply admire … He / She is a …',c:'Starts with “My hero is …”',f:function(v){return words(v)>=5&&/\bmy hero is\b/i.test(v)}},
+  {k:'h2',t:'2. What has he or she done?',h:'Use have / has + V3.',ph:'He / She has won … He / She has just …',c:'Uses have / has + a verb (has won, has scored …)',f:function(v){return words(v)>=5&&/\b(has|have)\s+(just |never |already |always )?[a-z]{3,}\b/i.test(v)}},
+  {k:'h3',t:'3. Qualities',h:'What qualities do you admire?',ph:'I like his / her … and … He / She never gives up.',c:'Names a quality (courage, determination, kind …)',f:function(v){return words(v)>=5&&/(courage|determination|hard|brave|kind|strong|talent|patient|clever|gives up|give up|confident|honest)/i.test(v)}},
+  {k:'h4',t:'4. Conclusion',h:'Why does he or she inspire you?',ph:'He / She inspires me because …',c:'Says why the hero inspires you',f:function(v){return words(v)>=5&&/(inspire|admire|impress|because|example)/i.test(v)}}
+ ];
+ var card=mk(root,'card','<h2>Exercise 9: write about your hero</h2><p class="note">Use Ana’s text as your example. Write four short parts.</p>'+
+  PARTS.map(function(p){return '<div style="margin-top:14px"><h3>'+p.t+'</h3><p class="note">'+p.h+'</p><textarea id="'+p.k+'" aria-label="'+p.t+'" placeholder="'+p.ph+'" style="min-height:84px"></textarea></div>'}).join('')+
+  '<ul class="checklist" id="cl"></ul><div class="row-wrap" style="margin-top:12px"><span class="note" id="wc"></span></div><div class="row-wrap" style="margin-top:8px"><button class="btn" type="button" id="sv">Save my result</button><button class="btn ghost" type="button" id="cp">Copy my text</button></div><div class="fb" role="status" aria-live="polite"></div>');
+ var fb=card.querySelector('.fb'),cl=card.querySelector('#cl'),wc=card.querySelector('#wc');
+ function all(){return PARTS.map(function(p){return card.querySelector('#'+p.k).value}).join(' ')}
+ function checks(){
+  var r=PARTS.map(function(p){return [p.c,p.f(card.querySelector('#'+p.k).value)]});
+  var a=all();
+  r.push(['Uses a noun in -er (player, winner, skater, athlete …)',/\b(player|swimmer|runner|skater|skier|dancer|boxer|defender|winner|writer|teacher|singer|gymnast|athlete|driver|actor|footballer)\b/i.test(a)]);
+  r.push(['Uses amazing, brilliant, fantastic or perfect',/\b(amazing|brilliant|fantastic|perfect)\b/i.test(a)]);
+  r.push(['At least 60 words in total',words(a)>=60]);
+  return r;
+ }
+ function upd(){var r=checks();wc.textContent=words(all())+' words in total';cl.innerHTML=r.map(function(x){return '<li class="'+(x[1]?'ok':'')+'"><span class="dot"></span>'+x[0]+'</li>'}).join('')}
+ PARTS.forEach(function(p){var t=card.querySelector('#'+p.k);if(DR[p.k])t.value=DR[p.k];t.oninput=function(){setDraft(p.k,t.value);upd()}});
+ upd();
+ card.querySelector('#sv').onclick=function(){
+  if(words(all())<10){fb.innerHTML='<span class="no">Write at least 10 words first.</span>';return}
+  var r=checks(),n=r.filter(function(x){return x[1]}).length,pts=n*5,rec=S.q.wp;
+  if(!rec||pts>=rec.pts){S.q.wp={pts:pts,c:n,t:r.length};save()}
+  fb.innerHTML='<div class="result">'+starsSVG(rate(n,r.length))+'<div class="big">'+n+' of '+r.length+' checks done (+'+pts+' XP)</div><p class="note">'+(n<r.length?'Read the checklist, add what is missing and save again.':'Excellent text!')+'</p></div>';
+  refreshHud();
+ };
+ card.querySelector('#cp').onclick=function(){copyText(PARTS.map(function(p){return card.querySelector('#'+p.k).value.trim()}).filter(Boolean).join(' '),this,fb)};
+}
+
+/* ---------- STAGES ---------- */
+var STAGES=[
+ {title:'Heroes and Champions',sub:'Learn the new words about heroes and sport. Then talk about your own hero.',ref:'Page 31 · Ex. 1',tint:'green',ids:['match','words'],
+  build:function(r){
+   vocabBlock(r,[0],'New words: heroes and sport');
+   matchGame(r,VOCAB[0].items);
+   quiz(r,'words','Translate the word',wordsQuiz(VOCAB[0].items,8),'Choose the right translation or the right English word.');
+   heroCard(r);
+  }},
+ {title:'Meet Simone Biles',sub:'Read Ana’s text in full and say why Simone Biles is her hero.',ref:'Page 31 · Ex. 2–3',tint:'blue',ids:['words2','simone'],
+  build:function(r){
+   vocabBlock(r,[1],'Qualities and goals');
+   quiz(r,'words2','Translate the word',wordsQuiz(VOCAB[1].items,8),'Choose the right translation or the right English word.');
+   simoneBlock(r);
+   quiz(r,'simone','Exercises 2 and 3',Q_SIMONE,'Read the text again and choose the best answer.');
+   openCard(r);
+  }},
+ {title:'Very Good: Synonyms',sub:'Find four synonyms for very good in Ana’s text.',ref:'Page 31 · Ex. 4',tint:'pink',ids:['syn1','syn2'],
+  build:function(r){
+   vocabBlock(r,[2],'Synonyms for very good');
+   quiz(r,'syn1','Find in the text',Q_SYN1,'Look at Ana’s text. Type the missing word.');
+   quiz(r,'syn2','Use the synonyms',Q_SYN2,'Choose the best word.');
+  }},
+ {title:'Word Building: -er',sub:'Make nouns for people who do an action: dancer, skier, player.',ref:'Page 31–32 · Language Facts, Ex. 5',tint:'green',ids:['er','er2'],
+  build:function(r){
+   erCard(r);
+   vocabBlock(r,[3],'Doers of the action');
+   quiz(r,'er','Exercise 5: form nouns',Q_ER,'Form a noun from the verb. Press Listen to hear it.');
+   quiz(r,'er2','Spelling',Q_ER2,'Choose the correct spelling.');
+  }},
+ {title:'Sports Stars',sub:'Say what famous sportspeople are and what they can do.',ref:'Page 32 · Ex. 6',tint:'blue',ids:['stars','sc','wstars'],
+  build:function(r){
+   peopleCard(r);
+   quiz(r,'stars','Who is who?',Q_STARS,'Choose the right word.');
+   scramble(r,'sc','Make sentences',SCR_STARS.slice(),'Put the words in order.');
+   writeStars(r);
+  }},
+ {title:'Grammar Lab 1: have / has + V3',sub:'Talk about what has just happened. Match questions and answers, then fill in the text.',ref:'Page 32 · Ex. 7–8',tint:'pink',ids:['pp','pp2','qa','cloze'],
+  build:function(r){
+   ppCard(r);
+   quiz(r,'pp','Past participles',Q_PP,'Type the past participle (V3).');
+   quiz(r,'pp2','have or has?',Q_PP2,'Choose the correct word.');
+   quiz(r,'qa','Exercise 7: match',Q_QA,'Match the question to the answer.');
+   quiz(r,'cloze','Exercise 8: missing words',Q_CLOZE,'Choose the missing word.');
+   revealCard(r,'The complete text of Exercise 8','Press the button to read the text with all the words in place.','Show the complete text',function(){return '<div class="textpanel" style="margin-top:10px">'+tokenise(CLOZE_TEXT)+' '+listenBtn(CLOZE_TEXT)+'</div><div class="eg-box" style="margin-top:8px"><b>soccer</b> = football (American English)</div><div class="gloss hidden" role="status" aria-live="polite"></div>'});
+  }},
+ {title:'Grammar Lab 2: Tag Questions',sub:'Add the tag: can’t she? haven’t you? Listen to the intonation.',ref:'Page 33 · Ex. 10',tint:'green',ids:['tag1','tag2'],
+  build:function(r){
+   tagCard(r);
+   quiz(r,'tag1','Exercise 10: add the tag',Q_TAG1,'Type the tag. Then press Listen and repeat the intonation.');
+   quiz(r,'tag2','Choose the tag',Q_TAG2,'Choose the correct tag.');
+  }},
+ {title:'Football Talk',sub:'Complete the dialogue between Andi and Nina. Then discuss.',ref:'Page 33 · Ex. 11–12',tint:'blue',ids:['dial'],
+  build:function(r){
+   quiz(r,'dial','Exercise 11: missing words',Q_DIAL,'Andi and Nina talk about a football match. Choose the missing word.');
+   revealCard(r,'The complete dialogue','Press the button to read the dialogue with all the words in place.','Show the complete dialogue',function(){return '<div class="dialogue" style="margin-top:10px">'+DIALOG.map(function(l){return '<div class="line"><span class="who '+l[0].toLowerCase()+'">'+l[0]+'</span><p class="say">'+l[1]+'</p>'+listenBtn(l[1])+'</div>'}).join('')+'</div>'});
+   talkCard(r);
+  }},
+ {title:'The Sound /ŋk/',sub:'Listen, repeat, transcribe and translate ten words with -nk.',ref:'Page 33 · Ex. 14',tint:'pink',ids:['nk1','nk2'],
+  build:function(r){
+   vocabBlock(r,[4],'Words with -nk');
+   mk(r,'card','<h2>Remember</h2><div class="explain">'+tri('In <b>-nk</b> the letter n sounds like <b>/ŋ/</b>, as in “sing”, and then comes <b>/k/</b>: bank /bæŋk/.','În <b>-nk</b> litera n se pronunță <b>/ŋ/</b>, ca în „sing”, apoi urmează <b>/k/</b>: bank /bæŋk/.','В <b>-nk</b> буква n читается как <b>/ŋ/</b>, как в «sing», затем идёт <b>/k/</b>: bank /bæŋk/.')+'</div>');
+   quiz(r,'nk1','Transcribe',nkItems,'Press Listen and choose the correct transcription.');
+   quiz(r,'nk2','Find the sound',Q_NK2,'Press Listen and choose the word with /ŋk/.');
+  }},
+ {title:'My Hero',sub:'Write a paragraph about your hero and plan your poster.',ref:'Pages 32–33 · Ex. 9 and 13',tint:'green',ids:['wp'],
+  build:function(r){
+   simoneBlock(r);
+   heroWrite(r);
+   posterCard(r);
+  }}
+];
+var cur=0;
+function isDone(st){return st.ids.every(function(id){return S.q[id]})}
+function stageStats(st){var c=0,t=0;st.ids.forEach(function(id){if(S.q[id]){c+=S.q[id].c;t+=S.q[id].t}});return {c:c,t:t}}
+function stageStars(st){var s=stageStats(st);return isDone(st)?rate(s.c,s.t):0}
+function xpHTML(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="star-on" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg><span>'+totalXP()+' XP</span>'}
+function refreshHud(){
+ var x=document.getElementById('hudxp');if(x)x.innerHTML=xpHTML();
+ var s=document.getElementById('status'),a=document.getElementById('after');
+ if(cur&&s){
+  var st=STAGES[cur-1],n=st.ids.filter(function(id){return S.q[id]}).length;
+  if(isDone(st)){s.className='status ok';s.innerHTML='Stage complete '+starsSVG(stageStars(st))}
+  else{s.className='status';s.textContent='Practice finished: '+n+' of '+st.ids.length}
+  if(a){a.innerHTML=isDone(st)?'<div class="card result"><div class="big">Well done!</div>'+(cur<STAGES.length?'<a class="btn" href="#stage-'+(cur+1)+'" style="text-decoration:none">Next stage</a>':'<a class="btn" href="#" style="text-decoration:none">See all stages</a>')+'</div>':''}
+ }
+}
+function home(){
+ var done=STAGES.filter(isDone).length;
+ var li=STAGES.map(function(st,i){
+  var d=isDone(st);
+  return '<li><span class="node'+(d?' done':'')+'">'+(i+1)+'</span><a class="stagebtn" href="#stage-'+(i+1)+'"><div class="row"><div><h3>'+st.title+'</h3><div class="sub">'+st.sub+'</div></div>'+(d?starsSVG(stageStars(st)):'')+'</div><span class="ref t-'+st.tint+'">'+st.ref+'</span></a></li>';
+ }).join('');
+ app.innerHTML='<div class="top"><span class="kicker">Unit 2 · Lesson Four · pages 31–33</span><span class="xp" id="hudxp">'+xpHTML()+'</span></div><h1>Life Is a Sport</h1><div class="tabs"><i></i><i></i><i></i></div>'+
+  '<p class="lead">Learn the new words, read about Simone Biles, talk about what has just happened, add tag questions and write about your own hero. A right answer on the first try gives 10 XP, on the second try 5 XP. You can open any stage and play it again.</p>'+
+  '<ol class="path">'+li+'</ol>'+
+  '<div class="card"><h3>'+(done===STAGES.length?'Lesson complete!':done+' of '+STAGES.length+' stages complete')+'</h3><p class="note" style="margin:4px 0 10px">Type your name and copy your results to send them to your teacher.</p><div class="row-wrap"><input id="nm" type="text" autocomplete="name" aria-label="Your name" placeholder="Your name" style="font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0;flex:1 1 180px"><button class="btn" type="button" id="cr">Copy my results</button><button class="btn ghost" type="button" id="rs">Start over</button></div><div id="rh"></div></div>';
+ var nm=document.getElementById('nm');nm.value=S.name||'';nm.oninput=function(){S.name=nm.value;save()};
+ var rh=document.getElementById('rh');
+ document.getElementById('cr').onclick=function(){
+  var t='Life Is a Sport – '+(S.name||'(no name)')+'\nTotal: '+totalXP()+' XP, '+done+' of '+STAGES.length+' stages complete\n'+STAGES.map(function(st,i){var s=stageStats(st);return (i+1)+'. '+st.title+': '+(isDone(st)?stageStars(st)+'/3 stars ('+s.c+'/'+s.t+' first try)':'not finished')}).join('\n');
+  copyText(t,this,rh);
+ };
+ var rs=document.getElementById('rs'),armed=false;
+ rs.onclick=function(){
+  if(!armed){armed=true;rs.textContent='Press again to erase all progress';setTimeout(function(){armed=false;rs.textContent='Start over'},4000);return}
+  S={name:S.name,q:{}};DR={};save();try{localStorage.removeItem('uf4-draft')}catch(e){}home();
+ };
+}
+function stageScreen(n){
+ var st=STAGES[n-1];
+ app.innerHTML='<a class="back" href="#">← All stages</a><div class="top"><span class="kicker">'+st.ref+'</span><span class="xp" id="hudxp">'+xpHTML()+'</span></div><div class="stagehead"><span class="tag" style="background:var(--'+st.tint+')"></span><h1>'+st.title+'</h1></div><p class="lead" style="margin-bottom:0">'+st.sub+'</p><div class="status" id="status"></div><div id="blocks"></div><div id="after"></div>';
+ st.build(document.getElementById('blocks'));
+ refreshHud();
+}
+function route(){
+ var m=/^#stage-(\d+)$/.exec(location.hash),n=m?+m[1]:0;
+ if(n>=1&&n<=STAGES.length){cur=n;stageScreen(n)}else{cur=0;home()}
+ window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-say]');if(b)say(b.dataset.say)});
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
+
+</body></html>
